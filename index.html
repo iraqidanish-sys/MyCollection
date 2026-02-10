@@ -645,6 +645,12 @@
                 </form>
             </div>
 
+            <div class="filter-bar" style="margin-bottom: 25px;">
+                <div class="filter-chip active" onclick="window.filterGadgets(event, 'all')">All Gadgets</div>
+                <div class="filter-chip" onclick="window.filterGadgets(event, 'owned')">Owned</div>
+                <div class="filter-chip" onclick="window.filterGadgets(event, 'sold')">Sold</div>
+            </div>
+
             <div class="items-grid" id="gadgets-list"></div>
         </div>
 
@@ -872,23 +878,59 @@
             }
         });
 
+        // Gadget filter
+        let currentGadgetFilter = 'all';
+
+        window.filterGadgets = function(event, filter) {
+            currentGadgetFilter = filter;
+            document.querySelectorAll('#gadgets .filter-chip').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            renderGadgets();
+        };
+
+        // Calculate ownership duration
+        function calculateOwnershipDuration(buyDate, sellDate) {
+            const start = new Date(buyDate);
+            const end = sellDate ? new Date(sellDate) : new Date();
+            
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Same day';
+            if (diffDays === 1) return '1 day';
+            if (diffDays < 30) return `${diffDays} days`;
+            
+            const diffMonths = Math.floor(diffDays / 30);
+            const remainingDays = diffDays % 30;
+            
+            if (diffMonths === 1 && remainingDays === 0) return '1 month';
+            if (diffMonths === 1) return `1 month, ${remainingDays} day${remainingDays > 1 ? 's' : ''}`;
+            if (remainingDays === 0) return `${diffMonths} months`;
+            return `${diffMonths} months, ${remainingDays} day${remainingDays > 1 ? 's' : ''}`;
+        }
+
         // Render gadgets
         function renderGadgets() {
             const container = document.getElementById('gadgets-list');
+            let filtered = gadgets;
+
+            if (currentGadgetFilter === 'owned') filtered = gadgets.filter(g => g.status === 'owned');
+            if (currentGadgetFilter === 'sold') filtered = gadgets.filter(g => g.status === 'sold');
             
-            if (gadgets.length === 0) {
+            if (filtered.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📱</div>
-                        <p>No gadgets yet. Add your first one above!</p>
+                        <p>No gadgets in this category yet!</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = gadgets.map(g => {
+            container.innerHTML = filtered.map(g => {
                 const profit = g.sellPrice ? g.sellPrice - g.price : 0;
                 const profitClass = profit > 0 ? 'profit-positive' : profit < 0 ? 'profit-negative' : '';
+                const duration = calculateOwnershipDuration(g.date, g.sellDate);
                 
                 return `
                 <div class="item-card">
@@ -927,7 +969,16 @@
                             <span class="info-label">Sold</span>
                             <span class="info-value">${new Date(g.sellDate).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
                         </div>
-                        ` : ''}
+                        <div class="info-row">
+                            <span class="info-label">Held For</span>
+                            <span class="info-value" style="color: #00f5ff; font-weight: 600;">⏱️ ${duration}</span>
+                        </div>
+                        ` : `
+                        <div class="info-row">
+                            <span class="info-label">Owned For</span>
+                            <span class="info-value" style="color: #00f5ff; font-weight: 600;">⏱️ ${duration}</span>
+                        </div>
+                        `}
                         ${g.notes ? `
                         <div class="info-row">
                             <span class="info-label">Notes</span>
@@ -1051,6 +1102,7 @@
             container.innerHTML = filtered.map(g => {
                 const profit = g.sellPrice ? g.sellPrice - g.buyPrice : 0;
                 const profitClass = profit > 0 ? 'profit-positive' : profit < 0 ? 'profit-negative' : '';
+                const duration = calculateOwnershipDuration(g.buyDate, g.sellDate);
                 
                 return `
                     <div class="item-card">
@@ -1097,7 +1149,16 @@
                                 <span class="info-label">Sold</span>
                                 <span class="info-value">${new Date(g.sellDate).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
                             </div>
-                            ` : ''}
+                            <div class="info-row">
+                                <span class="info-label">Held For</span>
+                                <span class="info-value" style="color: #00f5ff; font-weight: 600;">⏱️ ${duration}</span>
+                            </div>
+                            ` : `
+                            <div class="info-row">
+                                <span class="info-label">Owned For</span>
+                                <span class="info-value" style="color: #00f5ff; font-weight: 600;">⏱️ ${duration}</span>
+                            </div>
+                            `}
                             ${g.notes ? `
                             <div class="info-row">
                                 <span class="info-label">Notes</span>
