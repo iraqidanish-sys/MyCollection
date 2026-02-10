@@ -1458,22 +1458,29 @@ async function loadSettings() {
 }
                 
                 // Create new settings document
-                await addDoc(collection(db, 'settings'), {
-                    gadgetCategories,
-                    gamePlatforms,
-                    gameGenres,
-                    digitalTypes,
-                    customIcons
-                });
-                
-                updateAllDropdowns();
-                renderSettingsLists();
-                renderCustomIcons();
-            } catch (error) {
-                console.error('Error saving settings:', error);
-                alert('Error saving settings. Please try again.');
-            }
-        }
+                async function saveSettings() {
+
+    try {
+
+        const settingsRef = doc(db, 'settings', 'appConfig');
+
+        await setDoc(settingsRef, {
+            gadgetCategories,
+            gamePlatforms,
+            gameGenres,
+            digitalTypes,
+            customIcons
+        });
+
+        updateAllDropdowns();
+        renderSettingsLists();
+        renderCustomIcons();
+
+    } catch (error) {
+        console.error('Error saving settings:', error);
+        alert('Error saving settings. Please try again.');
+    }
+}
 
         // Update all dropdowns with current settings
         function updateAllDropdowns() {
