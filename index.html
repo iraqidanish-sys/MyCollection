@@ -1324,9 +1324,17 @@
                 
                 // For platform dropdown, add icon indicator
                 if (id === 'gm-platform') {
-                    const customIcon = customIcons.find(icon => icon.platform === option);
+                    const customIcon = customIcons.find(icon => {
+                        // Try exact match
+                        if (icon.platform === option) return true;
+                        // Try fuzzy match (without emoji)
+                        const cleanOption = option.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u206F\u2700-\u27BF\uE000-\uF8FF\uD800-\uDFFF]/g, '').replace(/\s+/g, ' ').trim();
+                        const cleanIcon = icon.platform.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u206F\u2700-\u27BF\uE000-\uF8FF\uD800-\uDFFF]/g, '').replace(/\s+/g, ' ').trim();
+                        return cleanIcon === cleanOption;
+                    });
+                    
                     if (customIcon) {
-                        opt.textContent = '🖼️ ' + option; // Add icon indicator
+                        opt.textContent = '🎨 ' + option + ' (Custom Icon)';
                     } else {
                         opt.textContent = option;
                     }
