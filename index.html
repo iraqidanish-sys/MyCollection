@@ -541,6 +541,8 @@
     </style>
 </head>
 <body>
+    <!-- Main App (hidden until authenticated) -->
+    <div id="mainApp" style="display: none;">
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
 
     <div class="sidebar" id="sidebar">
@@ -623,7 +625,7 @@
 
             <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
                 <button class="btn" onclick="window.exportGadgetsCSV()" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
-                    📥 Export
+                    📥 Export to TSV
                 </button>
                 <button class="btn" onclick="document.getElementById('gadget-import').click()" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
                     📤 Import from TSV/CSV
@@ -704,7 +706,7 @@
 
             <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
                 <button class="btn" onclick="window.exportGamesCSV()" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
-                    📥 Export
+                    📥 Export to TSV
                 </button>
                 <button class="btn" onclick="document.getElementById('game-import').click()" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
                     📤 Import from TSV/CSV
@@ -816,7 +818,7 @@
 
             <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
                 <button class="btn" onclick="window.exportDigitalCSV()" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
-                    📥 Export
+                    📥 Export to TSV
                 </button>
                 <button class="btn" onclick="document.getElementById('digital-import').click()" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
                     📤 Import from TSV/CSV
@@ -907,12 +909,50 @@
             </div>
         </div>
     </div>
+    </div>
+    <!-- End Main App -->
+
+    <!-- Login Screen -->
+    <div id="loginScreen" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+        <div style="text-align: center; max-width: 400px; padding: 40px;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🎮</div>
+            <h1 style="font-size: 36px; margin-bottom: 10px; background: linear-gradient(45deg, #00f5ff, #ff00e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                My Tech & Games Collection
+            </h1>
+            <p style="color: #888; margin-bottom: 40px; font-size: 16px;">
+                Track your gadgets, games, and digital purchases
+            </p>
+            <button id="googleSignInBtn" style="background: white; color: #444; border: none; padding: 15px 30px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;">
+                <svg width="20" height="20" viewBox="0 0 20 20">
+                    <path fill="#4285F4" d="M19.6 10.23c0-.82-.1-1.42-.25-2.05H10v3.72h5.5c-.15.96-.74 2.31-2.04 3.22v2.45h3.16c1.89-1.73 2.98-4.3 2.98-7.34z"/>
+                    <path fill="#34A853" d="M13.46 15.13c-.83.59-1.96 1-3.46 1-2.64 0-4.88-1.74-5.68-4.15H1.07v2.52C2.72 17.75 6.09 20 10 20c2.7 0 4.96-.89 6.62-2.42l-3.16-2.45z"/>
+                    <path fill="#FBBC05" d="M3.99 10c0-.69.12-1.35.32-1.97V5.51H1.07A9.973 9.973 0 000 10c0 1.61.39 3.14 1.07 4.49l3.24-2.52c-.2-.62-.32-1.28-.32-1.97z"/>
+                    <path fill="#EA4335" d="M10 3.88c1.88 0 3.13.81 3.85 1.48l2.84-2.76C14.96.99 12.7 0 10 0 6.09 0 2.72 2.25 1.07 5.51l3.24 2.52C5.12 5.62 7.36 3.88 10 3.88z"/>
+                </svg>
+                Sign in with Google
+            </button>
+            <div id="loginError" style="color: #f44336; margin-top: 20px; font-size: 14px; display: none;"></div>
+        </div>
+    </div>
+
+    <!-- User Info Bar (shown when logged in) -->
+    <div id="userInfo" style="display: none; position: fixed; top: 20px; right: 20px; background: #1a1a2e; padding: 12px 20px; border-radius: 10px; border: 1px solid #2a2a3e; z-index: 1001; display: flex; align-items: center; gap: 12px;">
+        <img id="userPhoto" src="" alt="" style="width: 32px; height: 32px; border-radius: 50%;">
+        <div>
+            <div id="userName" style="font-size: 14px; font-weight: 600; color: #e0e0e0;"></div>
+            <div id="userEmail" style="font-size: 12px; color: #888;"></div>
+        </div>
+        <button id="signOutBtn" style="background: linear-gradient(45deg, #f44336, #d32f2f); border: none; padding: 8px 16px; border-radius: 6px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; margin-left: 10px;">
+            Sign Out
+        </button>
+    </div>
 
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         // Updated: Fixed syntax errors - Feb 2026
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -928,6 +968,8 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
         // Global variables
         var gadgets = [];
@@ -937,6 +979,56 @@
         var currentGadgetFilter = 'all';
         var currentDigitalFilter = 'all';
         var deleteCallback = null;
+        var currentUser = null;
+
+        // Authentication State Management
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                currentUser = user;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('userInfo').style.display = 'flex';
+                document.getElementById('userName').textContent = user.displayName;
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('userPhoto').src = user.photoURL;
+                
+                // Load data after successful login
+                loadData();
+            } else {
+                // User is signed out
+                currentUser = null;
+                document.getElementById('loginScreen').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
+                document.getElementById('userInfo').style.display = 'none';
+            }
+        });
+
+        // Google Sign In
+        document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+            try {
+                document.getElementById('loginError').style.display = 'none';
+                const result = await signInWithPopup(auth, provider);
+                // User signed in successfully
+                console.log('Signed in as:', result.user.email);
+            } catch (error) {
+                console.error('Sign in error:', error);
+                const errorDiv = document.getElementById('loginError');
+                errorDiv.textContent = `Sign in failed: ${error.message}`;
+                errorDiv.style.display = 'block';
+            }
+        });
+
+        // Sign Out
+        document.getElementById('signOutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                console.log('Signed out successfully');
+            } catch (error) {
+                console.error('Sign out error:', error);
+                alert('Failed to sign out: ' + error.message);
+            }
+        });
 
         // Mobile menu toggle
         window.toggleMobileMenu = function() {
@@ -2077,7 +2169,7 @@
         document.getElementById('g-date').valueAsDate = new Date();
         document.getElementById('gm-buy-date').valueAsDate = new Date();
         document.getElementById('d-date').valueAsDate = new Date();
-        loadData();
+        // Data will be loaded automatically after authentication via onAuthStateChanged
     </script>
 </body>
 </html>
