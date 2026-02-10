@@ -1181,7 +1181,8 @@
   query,
   orderBy,
   getDoc,
-  setDoc
+  setDoc,
+  updateDoc
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
@@ -2074,22 +2075,39 @@ async function loadSettings() {
             try {
                 if (window.editingGadgetId) {
                     // Update existing gadget
-                    await deleteDoc(doc(db, 'gadgets', window.editingGadgetId));
-                    await addDoc(collection(db, 'gadgets'), gadget);
+                    await deleteDoc(doc(db, 'users', currentUserUID, 'gadgets', window.editingGadgetId));
+
+            await addDoc(
+            collection(db, 'users', currentUserUID, 'gadgets'),
+            gadget
+            );
                     window.editingGadgetId = null;
                     document.querySelector('#gadget-form .btn').textContent = 'Add to Collection';
                 } else {
                     // Add new gadget
-                    await addDoc(collection(db, 'gadgets'), gadget);
-                }
-                await loadData();
-                e.target.reset();
-                document.getElementById('g-date').valueAsDate = new Date();
-            } catch (error) {
-                console.error('Error adding gadget:', error);
-                alert('Error adding gadget. Please try again.');
-            }
-        });
+                   if (window.editingGadgetId) {
+
+    // ✅ UPDATE existing gadget
+    await updateDoc(
+        doc(db, 'users', currentUserUID, 'gadgets', window.editingGadgetId),
+        gadget
+    );
+
+    window.editingGadgetId = null;
+    document.querySelector('#gadget-form .btn').textContent = 'Add to Collection';
+
+} else {
+
+    // ✅ ADD new gadget (USER-SCOPED)
+    await addDoc(
+        collection(db, 'users', currentUserUID, 'gadgets'),
+        gadget
+    );
+}
+
+await loadData();
+e.target.reset();
+document.getElementById('g-date').valueAsDate = new Date();
 
         // Gadget filter
         window.filterGadgets = function(event, filter) {
@@ -2266,18 +2284,28 @@ async function loadSettings() {
 
             try {
                 if (window.editingGameId) {
-                    // Update existing game
-                    await deleteDoc(doc(db, 'games', window.editingGameId));
-                    await addDoc(collection(db, 'games'), game);
-                    window.editingGameId = null;
-                    document.querySelector('#game-form .btn').textContent = 'Add to Collection';
-                } else {
-                    // Add new game
-                    await addDoc(collection(db, 'games'), game);
-                }
-                await loadData();
-                e.target.reset();
-                document.getElementById('gm-buy-date').valueAsDate = new Date();
+
+    // ✅ UPDATE existing game (do NOT delete)
+    await updateDoc(
+        doc(db, 'users', currentUserUID, 'games', window.editingGameId),
+        game
+    );
+
+    window.editingGameId = null;
+    document.querySelector('#game-form .btn').textContent = 'Add to Collection';
+
+} else {
+
+    // ✅ ADD new game
+    await addDoc(
+        collection(db, 'users', currentUserUID, 'games'),
+        game
+    );
+}
+
+await loadData();
+e.target.reset();
+document.getElementById('gm-buy-date').valueAsDate = new Date();
             } catch (error) {
                 console.error('Error adding game:', error);
                 alert('Error adding game. Please try again.');
@@ -2845,15 +2873,18 @@ async function loadSettings() {
 
             for (const line of dataLines) {
 
+    // Detect delimiter (tab or comma)
     const delimiter = line.includes('\t') ? '\t' : ',';
 
     const values = line
         .split(delimiter)
         .map(v => v.replace('\r', '').trim());
 
-    const name = values[0] || '';
-    const type = values[1] || '💳 Other';
-    const amount = parseFloat(values[2]);
+    const name = values[0]?.trim() || '';
+const category = values[1]?.trim() || '🔧 Other';
+
+    // Safe amount cleanup (removes ₹ etc)
+    const amount = parseFloat(values[2]?.replace(/[^\d.]/g, ''));
 
     if (!name || isNaN(amount)) {
         console.warn('⛔ Skipping row:', values);
