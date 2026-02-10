@@ -572,10 +572,11 @@
             width: 24px;
             height: 24px;
             object-fit: contain;
-            background: rgba(255,255,255,0.1);
-            padding: 2px;
-            border-radius: 4px;
+            background: white;
+            padding: 3px;
+            border-radius: 6px;
             flex-shrink: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .custom-select-arrow {
@@ -1636,7 +1637,7 @@
                     if (customIcon) {
                         // Show custom icon + text without emoji
                         const textWithoutEmoji = removeEmojiFromText(item);
-                        displayContent = `<img src="${customIcon.iconUrl}" style="width: 24px; height: 24px; object-fit: contain; background: rgba(255,255,255,0.1); padding: 2px; border-radius: 4px;"> <span style="font-size: 14px;">${textWithoutEmoji}</span>`;
+                        displayContent = `<img src="${customIcon.iconUrl}" style="width: 28px; height: 28px; object-fit: contain; background: white; padding: 4px; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);"> <span style="font-size: 14px;">${textWithoutEmoji}</span>`;
                     } else {
                         // Show with emoji as normal
                         displayContent = `<span style="font-size: 14px;">${item}</span>`;
@@ -1917,7 +1918,7 @@
         function getPlatformIcon(platform) {
             const customIcon = customIcons.find(icon => icon.platform === platform);
             if (customIcon) {
-                return `<img src="${customIcon.iconUrl}" alt="${platform}" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle;">`;
+                return `<img src="${customIcon.iconUrl}" alt="${platform}" style="width: 20px; height: 20px; object-fit: contain; vertical-align: middle; background: white; padding: 3px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">`;
             }
             return ''; // Return empty if no custom icon
         }
