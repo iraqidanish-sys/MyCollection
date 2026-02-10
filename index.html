@@ -2758,70 +2758,86 @@
             alert('Template downloaded! Open it in Excel or Google Sheets, fill in your data (one item per row), and import it back.');
         };
 
-        // TSV/CSV Import for Gadgets
-        window.importGadgetsCSV = async function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+       window.importGadgetsTSV = async function(event) {
 
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    let text = e.target.result;
-                    // Remove BOM if present
-                    if (text.charCodeAt(0) === 0xFEFF) {
-                        text = text.slice(1);
-                    }
-                    const lines = text.split('\n').filter(line => line.trim());
-                    
-                    // Detect delimiter (tab or comma)
-                    const delimiter = lines[0].includes('\t') ? '\t' : ',';
-                    
-                    // Skip header row
-                    const dataLines = lines.slice(1);
-                    
-                    let imported = 0;
-                    for (const line of dataLines) {
-                        let values;
-                        if (delimiter === '\t') {
-                            // TSV - simple split
-                            values = line.split('\t');
-                        } else {
-                            // CSV - handle quoted values
-                            const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-                            if (!matches) continue;
-                            values = matches.map(v => v.replace(/^"|"$/g, '').trim());
-                        }
-                        
-                        if (values.length < 3) continue;
-                        
-                        const gadget = {
-                            name: values[0]?.trim() || '',
-                            category: values[1]?.trim() || '🔧 Other',
-                            price: parseFloat(values[2]) || 0,
-                            date: values[3]?.trim() || new Date().toISOString().split('T')[0],
-                            sellPrice: values[4]?.trim() ? parseFloat(values[4]) : null,
-                            sellDate: values[5]?.trim() || null,
-                            status: values[6]?.trim() || 'owned',
-                            notes: values[7]?.trim() || '',
-                            timestamp: Date.now()
-                        };
+    if (!currentUserUID) {
+        alert("User not logged in");
+        return;
+    }
 
-                        if (gadget.name && gadget.price) {
-                            await addDoc(collection(db, 'gadgets'), gadget);
-                            imported++;
-                        }
-                    }
+    const file = event.target.files[0];
+    if (!file) return;
 
-                    alert(`Successfully imported ${imported} gadget(s)!`);
-                    await loadData();
-                    event.target.value = ''; // Reset file input
-                } catch (error) {
-                    console.error('Import error:', error);
-                    alert('Error importing file. Please check the file format.');
+    const reader = new FileReader();
+
+    reader.onload = async function(e) {
+
+        try {
+            let text = e.target.result;
+
+            // Remove BOM
+            if (text.charCodeAt(0) === 0xFEFF) {
+                text = text.slice(1);
+            }
+
+            const lines = text.split('\n').filter(l => l.trim());
+            const dataLines = lines.slice(1); // Skip header
+
+            let imported = 0;
+
+            function parseDate(d) {
+                if (!d) return new Date();
+
+                if (d.includes('/')) {
+                    const [day, month, year] = d.split('/');
+                    return new Date(`20${year}`, month - 1, day);
                 }
-            };
-            reader.readAsText(file, 'UTF-8');
-        };
+
+                return new Date(d);
+            }
+
+            for (const line of dataLines) {
+
+                const values = line.split('\t');
+
+                if (values.length < 3) continue;
+
+                const gadget = {
+                    name: values[0]?.trim(),
+                    category: values[1]?.trim() || '🔧 Other',
+                    price: Number(values[2]) || 0,
+                    date: parseDate(values[3]),
+                    sellPrice: values[4] ? Number(values[4]) : null,
+                    sellDate: values[5] ? parseDate(values[5]) : null,
+                    status: values[6]?.trim() || 'owned',
+                    notes: values[7]?.trim() || '',
+                    timestamp: new Date()
+                };
+
+                if (gadget.name && gadget.price) {
+
+                    await addDoc(
+                        collection(db, 'users', currentUserUID, 'gadgets'),
+                        gadget
+                    );
+
+                    imported++;
+                }
+            }
+
+            alert(`Imported ${imported} gadgets successfully`);
+            await loadAllData();
+
+        } catch (err) {
+            console.error(err);
+            alert("Import failed");
+        }
+
+        event.target.value = '';
+    };
+
+    reader.readAsText(file, 'UTF-8');
+};
 
         // TSV/CSV Export for Games
         window.exportGamesCSV = function() {
