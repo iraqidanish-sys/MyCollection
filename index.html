@@ -642,16 +642,39 @@
                         <div class="input-group">
                             <label>Platform</label>
                             <select id="gm-platform">
-                                <option value="🎮 PlayStation 5">🎮 PlayStation 5</option>
-                                <option value="🎮 PlayStation 4">🎮 PlayStation 4</option>
-                                <option value="🎮 PlayStation 3">🎮 PlayStation 3</option>
+                                <!-- Replace icons below with custom console icons if needed -->
+                                <option value="🟦 PlayStation 5">🟦 PlayStation 5</option>
+                                <option value="🟦 PlayStation 4">🟦 PlayStation 4</option>
+                                <option value="🟦 PlayStation 3">🟦 PlayStation 3</option>
                                 <option value="🟩 Xbox Series X/S">🟩 Xbox Series X/S</option>
                                 <option value="🟩 Xbox One">🟩 Xbox One</option>
                                 <option value="🟩 Xbox 360">🟩 Xbox 360</option>
                                 <option value="🔴 Nintendo Switch">🔴 Nintendo Switch</option>
-                                <option value="🔴 Nintendo Wii/Wii U">🔴 Nintendo Wii/Wii U</option>
+                                <option value="🔵 Nintendo Wii U">🔵 Nintendo Wii U</option>
+                                <option value="⚪ Nintendo Wii">⚪ Nintendo Wii</option>
                                 <option value="💻 PC">💻 PC</option>
-                                <option value="📀 Other">📀 Other</option>
+                                <option value="📱 Mobile">📱 Mobile</option>
+                                <option value="🕹️ Retro">🕹️ Retro</option>
+                                <option value="🎮 Other">🎮 Other</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Genre</label>
+                            <select id="gm-genre">
+                                <option value="🎯 Action">🎯 Action</option>
+                                <option value="🏃 Adventure">🏃 Adventure</option>
+                                <option value="⚔️ RPG">⚔️ RPG</option>
+                                <option value="🔫 Shooter">🔫 Shooter</option>
+                                <option value="⚽ Sports">⚽ Sports</option>
+                                <option value="🏎️ Racing">🏎️ Racing</option>
+                                <option value="🧩 Puzzle">🧩 Puzzle</option>
+                                <option value="😱 Horror">😱 Horror</option>
+                                <option value="🎭 Story-Driven">🎭 Story-Driven</option>
+                                <option value="🛡️ Strategy">🛡️ Strategy</option>
+                                <option value="🎪 Party">🎪 Party</option>
+                                <option value="🎨 Simulation">🎨 Simulation</option>
+                                <option value="⚔️ Fighting">⚔️ Fighting</option>
+                                <option value="🎮 Other">🎮 Other</option>
                             </select>
                         </div>
                         <div class="input-group">
@@ -880,6 +903,7 @@
             const game = {
                 title: document.getElementById('gm-title').value,
                 platform: document.getElementById('gm-platform').value,
+                genre: document.getElementById('gm-genre').value,
                 buyPrice: parseFloat(document.getElementById('gm-buy-price').value),
                 buyDate: document.getElementById('gm-buy-date').value,
                 condition: document.getElementById('gm-condition').value,
@@ -937,6 +961,7 @@
                             <div>
                                 <div class="item-title">${g.title}</div>
                                 <span class="item-category">${g.platform}</span>
+                                ${g.genre ? `<span class="item-category" style="margin-left: 5px;">${g.genre}</span>` : ''}
                             </div>
                             <button class="delete-icon" onclick="window.deleteGame('${g.firestoreId}', '${g.title}')">×</button>
                         </div>
@@ -1042,7 +1067,8 @@
                         return `
                             <div class="item-card">
                                 <div class="item-title">${item.title}</div>
-                                <span class="item-category">🎮 ${item.platform}</span>
+                                <span class="item-category">${item.platform}</span>
+                                ${item.genre ? `<span class="item-category" style="margin-left: 5px;">${item.genre}</span>` : ''}
                                 <div style="margin-top: 15px;">
                                     <div class="info-label">Buy Price</div>
                                     <div class="price-tag">₹${item.buyPrice.toFixed(2)}</div>
