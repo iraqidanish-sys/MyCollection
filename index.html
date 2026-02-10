@@ -1627,12 +1627,32 @@
             const container = document.getElementById(containerId);
             if (!container) return;
             
-            container.innerHTML = items.map(item => `
-                <div style="background: #1a1a2e; padding: 10px 15px; border-radius: 8px; border: 1px solid #2a2a3e; display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 14px;">${item}</span>
-                    <button onclick="window.remove${type.charAt(0).toUpperCase() + type.slice(1)}('${item.replace(/'/g, "\\'")}')" style="background: #f44336; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">×</button>
-                </div>
-            `).join('');
+            container.innerHTML = items.map(item => {
+                let displayContent = '';
+                
+                // Check if this is a game platform and has a custom icon
+                if (type === 'gamePlatform') {
+                    const customIcon = getCustomIconForPlatform(item);
+                    if (customIcon) {
+                        // Show custom icon + text without emoji
+                        const textWithoutEmoji = removeEmojiFromText(item);
+                        displayContent = `<img src="${customIcon.iconUrl}" style="width: 24px; height: 24px; object-fit: contain; background: rgba(255,255,255,0.1); padding: 2px; border-radius: 4px;"> <span style="font-size: 14px;">${textWithoutEmoji}</span>`;
+                    } else {
+                        // Show with emoji as normal
+                        displayContent = `<span style="font-size: 14px;">${item}</span>`;
+                    }
+                } else {
+                    // Other types show normally
+                    displayContent = `<span style="font-size: 14px;">${item}</span>`;
+                }
+                
+                return `
+                    <div style="background: #1a1a2e; padding: 10px 15px; border-radius: 8px; border: 1px solid #2a2a3e; display: flex; align-items: center; gap: 10px;">
+                        ${displayContent}
+                        <button onclick="window.remove${type.charAt(0).toUpperCase() + type.slice(1)}('${item.replace(/'/g, "\\'")}')" style="background: #f44336; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: auto;">×</button>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Add/Remove functions for each setting type
