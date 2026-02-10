@@ -2845,32 +2845,39 @@ async function loadSettings() {
 
             for (const line of dataLines) {
 
-                const values = line.split('\t');
+    const delimiter = line.includes('\t') ? '\t' : ',';
 
-                if (values.length < 3) continue;
+    const values = line
+        .split(delimiter)
+        .map(v => v.replace('\r', '').trim());
 
-                const gadget = {
-                    name: values[0]?.trim(),
-                    category: values[1]?.trim() || '🔧 Other',
-                    price: Number(values[2]) || 0,
-                    date: parseDate(values[3]),
-                    sellPrice: values[4] ? Number(values[4]) : null,
-                    sellDate: values[5] ? parseDate(values[5]) : null,
-                    status: values[6]?.trim() || 'owned',
-                    notes: values[7]?.trim() || '',
-                    timestamp: new Date()
-                };
+    const name = values[0] || '';
+    const type = values[1] || '💳 Other';
+    const amount = parseFloat(values[2]);
 
-                if (gadget.name && gadget.price) {
+    if (!name || isNaN(amount)) {
+        console.warn('⛔ Skipping row:', values);
+        continue;
+    }
 
-                    await addDoc(
-                        collection(db, 'users', currentUserUID, 'gadgets'),
-                        gadget
-                    );
+    const digital = {
+        name,
+        type,
+        amount,
+        date: parseDate(values[3]) || new Date(),
+        duration: values[4] || '',
+        expiryDate: values[5] ? parseDate(values[5]) : null,
+        notes: values[6] || '',
+        timestamp: Date.now()
+    };
 
-                    imported++;
-                }
-            }
+    await addDoc(
+        collection(db, 'users', currentUserUID, 'digitalPurchases'),
+        digital
+    );
+
+    imported++;
+}
 
             alert(`Imported ${imported} gadgets successfully`);
             await loadAllData();
@@ -3151,9 +3158,24 @@ window.importDigitalCSV = async function (event) {
 
            for (const line of dataLines) {
 
-    const values = line
-        .split('\t')
-        .map(v => v.replace('\r', '').trim());
+    // Detect delimiter (tab or comma)
+const delimiter = line.includes('\t') ? '\t' : ',';
+
+// Detect delimiter (tab or comma)
+const delimiter = line.includes('\t') ? '\t' : ',';
+
+// Detect delimiter (tab or comma)
+const delimiter = line.includes('\t') ? '\t' : ',';
+
+// Detect delimiter (tab or comma)
+const delimiter = line.includes('\t') ? '\t' : ',';
+
+// Detect delimiter (tab or comma)
+const delimiter = line.includes('\t') ? '\t' : ',';
+
+const values = line
+    .split(delimiter)
+    .map(v => v.replace('\r', '').trim());
 
     const name = values[0] || '';
     const type = values[1] || '💳 Other';
