@@ -1465,6 +1465,24 @@
                                 </div>
                             </div>
                         `;
+                    } else if (item.type) {
+                        // Digital purchase item
+                        return `
+                            <div class="item-card">
+                                <div class="item-title">${item.name}</div>
+                                <span class="item-category">${item.type}</span>
+                                <div style="margin-top: 15px;">
+                                    <div class="info-label">Amount</div>
+                                    <div class="price-tag">₹${item.amount.toFixed(2)}</div>
+                                </div>
+                                ${item.expiryDate ? `
+                                <div style="margin-top: 10px;">
+                                    <div class="info-label">Expires</div>
+                                    <div style="color: #ffaa00; font-size: 13px; font-weight: 600; margin-top: 5px;">${new Date(item.expiryDate).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        `;
                     } else {
                         // Gadget item
                         const duration = calculateOwnershipDuration(item.date, item.sellDate);
@@ -1482,24 +1500,6 @@
                                     <div class="info-label">${status === 'sold' ? 'Held For' : 'Owned For'}</div>
                                     <div style="color: #00f5ff; font-size: 13px; font-weight: 600; margin-top: 5px;">⏱️ ${duration}</div>
                                 </div>
-                            </div>
-                        `;
-                    } else if (item.type) {
-                        // Digital purchase item
-                        return `
-                            <div class="item-card">
-                                <div class="item-title">${item.name}</div>
-                                <span class="item-category">${item.type}</span>
-                                <div style="margin-top: 15px;">
-                                    <div class="info-label">Amount</div>
-                                    <div class="price-tag">₹${item.amount.toFixed(2)}</div>
-                                </div>
-                                ${item.expiryDate ? `
-                                <div style="margin-top: 10px;">
-                                    <div class="info-label">Expires</div>
-                                    <div style="color: #ffaa00; font-size: 13px; font-weight: 600; margin-top: 5px;">${new Date(item.expiryDate).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
-                                </div>
-                                ` : ''}
                             </div>
                         `;
                     }
