@@ -554,6 +554,9 @@
         <div class="nav-item" onclick="showSection('games')">
             <span>🎮</span> Games
         </div>
+        <div class="nav-item" onclick="showSection('digital')">
+            <span>💳</span> Digital Purchases
+        </div>
     </div>
 
     <div class="main-content">
@@ -592,6 +595,14 @@
                 <div class="stat-box">
                     <div class="stat-label">Games Profit/Loss</div>
                     <div class="stat-value" id="dash-games-profit-stat">₹0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Digital Purchases</div>
+                    <div class="stat-value" id="dash-total-digital">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Digital Spending</div>
+                    <div class="stat-value" id="dash-digital-spent">₹0</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">Total Profit/Loss</div>
@@ -795,6 +806,92 @@
 
             <div class="items-grid" id="games-list"></div>
         </div>
+
+        <!-- Digital Purchases Section -->
+        <div id="digital" class="section">
+            <div class="header">
+                <h1>Digital Purchases</h1>
+                <p>Track subscriptions, gift cards, in-game purchases, and digital content</p>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="btn" onclick="window.exportDigitalCSV()" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
+                    📥 Export to TSV
+                </button>
+                <button class="btn" onclick="document.getElementById('digital-import').click()" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
+                    📤 Import from TSV/CSV
+                </button>
+                <button class="btn" onclick="window.downloadDigitalTemplate()" style="background: linear-gradient(45deg, #FF9800, #F57C00);">
+                    📋 Download Template
+                </button>
+                <input type="file" id="digital-import" accept=".csv,.tsv,.txt" style="display: none;" onchange="window.importDigitalCSV(event)">
+            </div>
+
+            <div class="add-card">
+                <h2>➕ Add Digital Purchase</h2>
+                <form id="digital-form">
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Item Name</label>
+                            <input type="text" id="d-name" placeholder="e.g., PS+ Premium" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Type</label>
+                            <select id="d-type">
+                                <option value="🎮 Game Subscription">🎮 Game Subscription</option>
+                                <option value="💎 Gift Card">💎 Gift Card</option>
+                                <option value="🎯 In-Game Purchase">🎯 In-Game Purchase</option>
+                                <option value="📺 Streaming Service">📺 Streaming Service</option>
+                                <option value="☁️ Cloud Storage">☁️ Cloud Storage</option>
+                                <option value="🎵 Music Service">🎵 Music Service</option>
+                                <option value="📚 Digital Content">📚 Digital Content</option>
+                                <option value="🔧 Software/App">🔧 Software/App</option>
+                                <option value="💳 Other">💳 Other</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Amount (₹)</label>
+                            <input type="number" id="d-amount" required min="0" step="0.01">
+                        </div>
+                        <div class="input-group">
+                            <label>Purchase Date</label>
+                            <input type="date" id="d-date" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Duration/Validity</label>
+                            <select id="d-duration">
+                                <option value="">Not Applicable</option>
+                                <option value="1 Month">1 Month</option>
+                                <option value="3 Months">3 Months</option>
+                                <option value="6 Months">6 Months</option>
+                                <option value="1 Year">1 Year</option>
+                                <option value="Lifetime">Lifetime</option>
+                                <option value="Custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Expiry Date (Optional)</label>
+                            <input type="date" id="d-expiry">
+                        </div>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label>Notes (Optional)</label>
+                            <textarea id="d-notes" placeholder="Account details, redemption code, renewal info, etc..."></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Add Purchase</button>
+                </form>
+            </div>
+
+            <div class="filter-bar" style="margin-bottom: 25px;">
+                <div class="filter-chip active" onclick="window.filterDigital(event, 'all')">All Purchases</div>
+                <div class="filter-chip" onclick="window.filterDigital(event, 'active')">Active</div>
+                <div class="filter-chip" onclick="window.filterDigital(event, 'expired')">Expired</div>
+            </div>
+
+            <div class="items-grid" id="digital-list"></div>
+        </div>
     </div>
 
     <!-- Delete Confirmation Modal -->
@@ -834,7 +931,10 @@
         // Global variables
         let gadgets = [];
         let games = [];
+        let digitalPurchases = [];
         let currentFilter = 'all';
+        let currentGadgetFilter = 'all';
+        let currentDigitalFilter = 'all';
         let deleteCallback = null;
 
         // Mobile menu toggle
@@ -857,6 +957,14 @@
                 const gamesQuery = query(collection(db, 'games'), orderBy('timestamp', 'desc'));
                 const gamesSnapshot = await getDocs(gamesQuery);
                 games = gamesSnapshot.docs.map(doc => ({
+                    firestoreId: doc.id,
+                    ...doc.data()
+                }));
+
+                // Load digital purchases
+                const digitalQuery = query(collection(db, 'digitalPurchases'), orderBy('timestamp', 'desc'));
+                const digitalSnapshot = await getDocs(digitalQuery);
+                digitalPurchases = digitalSnapshot.docs.map(doc => ({
                     firestoreId: doc.id,
                     ...doc.data()
                 }));
@@ -1285,6 +1393,10 @@
             const soldGames = games.filter(g => g.status === 'sold');
             const gamesProfit = soldGames.reduce((sum, g) => sum + (g.sellPrice - g.buyPrice), 0);
 
+            // Digital purchases stats
+            const totalDigital = digitalPurchases.length;
+            const digitalSpent = digitalPurchases.reduce((sum, d) => sum + d.amount, 0);
+
             // Update dashboard
             document.getElementById('dash-total-gadgets').textContent = totalGadgets;
             document.getElementById('dash-gadgets-value').textContent = `₹${currentGadgetsValue.toFixed(0)}`;
@@ -1294,6 +1406,9 @@
             document.getElementById('dash-total-games').textContent = totalGames;
             document.getElementById('dash-games-sold').textContent = soldGames.length;
             document.getElementById('dash-games-profit-stat').textContent = `₹${gamesProfit.toFixed(0)}`;
+            
+            document.getElementById('dash-total-digital').textContent = totalDigital;
+            document.getElementById('dash-digital-spent').textContent = `₹${digitalSpent.toFixed(0)}`;
             
             // Total profit/loss
             const totalProfit = gadgetsProfit + gamesProfit;
@@ -1318,7 +1433,7 @@
             });
 
             // Recent items
-            const recent = [...gadgets, ...games]
+            const recent = [...gadgets, ...games, ...digitalPurchases]
                 .sort((a, b) => b.timestamp - a.timestamp)
                 .slice(0, 6);
 
@@ -1371,6 +1486,24 @@
                                 </div>
                             </div>
                         `;
+                    } else if (item.type) {
+                        // Digital purchase item
+                        return `
+                            <div class="item-card">
+                                <div class="item-title">${item.name}</div>
+                                <span class="item-category">${item.type}</span>
+                                <div style="margin-top: 15px;">
+                                    <div class="info-label">Amount</div>
+                                    <div class="price-tag">₹${item.amount.toFixed(2)}</div>
+                                </div>
+                                ${item.expiryDate ? `
+                                <div style="margin-top: 10px;">
+                                    <div class="info-label">Expires</div>
+                                    <div style="color: #ffaa00; font-size: 13px; font-weight: 600; margin-top: 5px;">${new Date(item.expiryDate).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        `;
                     }
                 }).join('');
             }
@@ -1379,8 +1512,168 @@
         function updateAll() {
             renderGadgets();
             renderGames();
+            renderDigital();
             updateDashboard();
         }
+
+        // Digital purchases form handler
+        document.getElementById('digital-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const digital = {
+                name: document.getElementById('d-name').value,
+                type: document.getElementById('d-type').value,
+                amount: parseFloat(document.getElementById('d-amount').value),
+                date: document.getElementById('d-date').value,
+                duration: document.getElementById('d-duration').value,
+                expiryDate: document.getElementById('d-expiry').value || null,
+                notes: document.getElementById('d-notes').value,
+                timestamp: Date.now()
+            };
+
+            try {
+                if (window.editingDigitalId) {
+                    await deleteDoc(doc(db, 'digitalPurchases', window.editingDigitalId));
+                    await addDoc(collection(db, 'digitalPurchases'), digital);
+                    window.editingDigitalId = null;
+                    document.querySelector('#digital-form .btn').textContent = 'Add Purchase';
+                } else {
+                    await addDoc(collection(db, 'digitalPurchases'), digital);
+                }
+                await loadData();
+                e.target.reset();
+                document.getElementById('d-date').valueAsDate = new Date();
+            } catch (error) {
+                console.error('Error adding digital purchase:', error);
+                alert('Error adding purchase. Please try again.');
+            }
+        });
+
+        // Digital filter
+        window.filterDigital = function(event, filter) {
+            currentDigitalFilter = filter;
+            document.querySelectorAll('#digital .filter-chip').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            renderDigital();
+        };
+
+        // Render digital purchases
+        function renderDigital() {
+            const container = document.getElementById('digital-list');
+            let filtered = digitalPurchases;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (currentDigitalFilter === 'active') {
+                filtered = digitalPurchases.filter(d => {
+                    if (!d.expiryDate) return true;
+                    return new Date(d.expiryDate) >= today;
+                });
+            }
+            if (currentDigitalFilter === 'expired') {
+                filtered = digitalPurchases.filter(d => {
+                    if (!d.expiryDate) return false;
+                    return new Date(d.expiryDate) < today;
+                });
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💳</div>
+                        <p>No digital purchases in this category yet!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(d => {
+                const isExpired = d.expiryDate && new Date(d.expiryDate) < today;
+                const statusBadge = isExpired ? 
+                    '<span class="status-sold" style="margin-left: 5px;">EXPIRED</span>' : 
+                    '<span class="status-owned" style="margin-left: 5px;">ACTIVE</span>';
+                
+                return `
+                <div class="item-card">
+                    <div class="item-header">
+                        <div>
+                            <div class="item-title">${d.name}</div>
+                            <span class="item-category">${d.type}</span>
+                            ${statusBadge}
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="edit-icon" onclick="window.editDigital('${d.firestoreId}')" title="Edit">✏️</button>
+                            <button class="delete-icon" onclick="window.deleteDigital('${d.firestoreId}', '${d.name}')">×</button>
+                        </div>
+                    </div>
+                    <div class="item-info">
+                        <div class="info-row">
+                            <span class="info-label">Amount</span>
+                            <span class="info-value">₹${d.amount.toFixed(2)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Purchase Date</span>
+                            <span class="info-value">${new Date(d.date).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
+                        </div>
+                        ${d.duration ? `
+                        <div class="info-row">
+                            <span class="info-label">Duration</span>
+                            <span class="info-value">${d.duration}</span>
+                        </div>
+                        ` : ''}
+                        ${d.expiryDate ? `
+                        <div class="info-row">
+                            <span class="info-label">Expiry Date</span>
+                            <span class="info-value ${isExpired ? 'profit-negative' : ''}">${new Date(d.expiryDate).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
+                        </div>
+                        ` : ''}
+                        ${d.notes ? `
+                        <div class="info-row">
+                            <span class="info-label">Notes</span>
+                            <span class="info-value">${d.notes}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // Delete digital purchase
+        window.deleteDigital = function(firestoreId, name) {
+            document.getElementById('deleteMessage').textContent = 
+                `Are you sure you want to delete "${name}"? This action cannot be undone.`;
+            document.getElementById('deleteModal').classList.add('active');
+            
+            deleteCallback = async () => {
+                try {
+                    await deleteDoc(doc(db, 'digitalPurchases', firestoreId));
+                    await loadData();
+                } catch (error) {
+                    console.error('Error deleting digital purchase:', error);
+                    alert('Error deleting purchase. Please try again.');
+                }
+            };
+        };
+
+        // Edit digital purchase
+        window.editDigital = function(firestoreId) {
+            const digital = digitalPurchases.find(d => d.firestoreId === firestoreId);
+            if (!digital) return;
+
+            document.getElementById('d-name').value = digital.name;
+            document.getElementById('d-type').value = digital.type;
+            document.getElementById('d-amount').value = digital.amount;
+            document.getElementById('d-date').value = digital.date;
+            document.getElementById('d-duration').value = digital.duration || '';
+            document.getElementById('d-expiry').value = digital.expiryDate || '';
+            document.getElementById('d-notes').value = digital.notes || '';
+
+            window.editingDigitalId = firestoreId;
+            document.querySelector('#digital-form .btn').textContent = 'Update Purchase';
+            document.getElementById('digital').scrollIntoView({ behavior: 'smooth' });
+        };
 
         // TSV/CSV Export for Gadgets
         window.exportGadgetsCSV = function() {
@@ -1608,9 +1901,117 @@
             reader.readAsText(file);
         };
 
+        // TSV/CSV Export for Digital Purchases
+        window.exportDigitalCSV = function() {
+            if (digitalPurchases.length === 0) {
+                alert('No digital purchases to export!');
+                return;
+            }
+
+            const headers = ['Name', 'Type', 'Amount', 'Purchase Date', 'Duration', 'Expiry Date', 'Notes'];
+            const rows = digitalPurchases.map(d => [
+                d.name,
+                d.type,
+                d.amount,
+                d.date,
+                d.duration || '',
+                d.expiryDate || '',
+                d.notes || ''
+            ]);
+
+            const tsv = [headers, ...rows]
+                .map(row => row.join('\t'))
+                .join('\n');
+
+            const blob = new Blob([tsv], { type: 'text/tab-separated-values' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `digital_purchases_export_${new Date().toISOString().split('T')[0]}.tsv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // Download Digital Template
+        window.downloadDigitalTemplate = function() {
+            const headers = ['Name', 'Type', 'Amount', 'Purchase Date', 'Duration', 'Expiry Date', 'Notes'];
+            const exampleRow = ['PS+ Premium', '🎮 Game Subscription', '1299', '2024-01-15', '1 Month', '2024-02-15', 'Auto-renewal enabled'];
+            
+            const tsv = [headers, exampleRow].map(row => row.join('\t')).join('\n');
+            
+            const blob = new Blob([tsv], { type: 'text/tab-separated-values' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'digital_purchases_template.tsv';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Template downloaded! Open it in Excel or Google Sheets, fill in your data (one purchase per row), and import it back.');
+        };
+
+        // TSV/CSV Import for Digital Purchases
+        window.importDigitalCSV = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim());
+                    
+                    // Detect delimiter (tab or comma)
+                    const delimiter = lines[0].includes('\t') ? '\t' : ',';
+                    
+                    // Skip header row
+                    const dataLines = lines.slice(1);
+                    
+                    let imported = 0;
+                    for (const line of dataLines) {
+                        let values;
+                        if (delimiter === '\t') {
+                            values = line.split('\t');
+                        } else {
+                            const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                            if (!matches) continue;
+                            values = matches.map(v => v.replace(/^"|"$/g, '').trim());
+                        }
+                        
+                        if (values.length < 3) continue;
+                        
+                        const digital = {
+                            name: values[0]?.trim() || '',
+                            type: values[1]?.trim() || '💳 Other',
+                            amount: parseFloat(values[2]) || 0,
+                            date: values[3]?.trim() || new Date().toISOString().split('T')[0],
+                            duration: values[4]?.trim() || '',
+                            expiryDate: values[5]?.trim() || null,
+                            notes: values[6]?.trim() || '',
+                            timestamp: Date.now()
+                        };
+
+                        if (digital.name && digital.amount) {
+                            await addDoc(collection(db, 'digitalPurchases'), digital);
+                            imported++;
+                        }
+                    }
+
+                    alert(`Successfully imported ${imported} digital purchase(s)!`);
+                    await loadData();
+                    event.target.value = '';
+                } catch (error) {
+                    console.error('Import error:', error);
+                    alert('Error importing file. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        };
+
         // Initialize
         document.getElementById('g-date').valueAsDate = new Date();
         document.getElementById('gm-buy-date').valueAsDate = new Date();
+        document.getElementById('d-date').valueAsDate = new Date();
         loadData();
     </script>
 </body>
