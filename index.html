@@ -2805,7 +2805,7 @@ async function loadSettings() {
             alert('Template downloaded! Open it in Excel or Google Sheets, fill in your data (one item per row), and import it back.');
         };
 
-       window.importGadgetsTSV = async function(event) {
+       window.importGadgetsCSV = async function(event) {
 
     if (!currentUserUID) {
         alert("User not logged in");
@@ -2957,7 +2957,7 @@ async function loadSettings() {
         };
 
         // TSV Import for Games (Multi-User Safe)
-window.importGamesTSV = async function(event) {
+window.importGamesCSV = async function(event) {
 
     if (!currentUserUID) {
         alert("User not logged in");
@@ -3115,7 +3115,7 @@ window.importGamesTSV = async function(event) {
         };
 
        // TSV Import for Digital Purchases (Multi-User Safe)
-window.importDigitalTSV = async function(event) {
+window.importDigitalCSV = async function(event) {
 
     if (!currentUserUID) {
         alert("User not logged in");
