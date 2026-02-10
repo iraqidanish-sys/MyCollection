@@ -28,6 +28,25 @@
             background: #1a1a2e;
             padding: 30px 20px;
             border-right: 1px solid #2a2a3e;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: linear-gradient(45deg, #00f5ff, #ff00e5);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
         }
 
         .logo {
@@ -225,45 +244,61 @@
 
         .item-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 245, 255, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 245, 255, 0.2);
+            border-color: #00f5ff44;
         }
 
         .item-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: start;
             margin-bottom: 20px;
         }
 
         .item-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 8px;
-            color: #fff;
+            color: #00f5ff;
+            margin-bottom: 5px;
         }
 
         .item-category {
             display: inline-block;
+            background: #ff00e533;
+            color: #ff00e5;
             padding: 4px 12px;
-            background: rgba(0, 245, 255, 0.1);
-            border: 1px solid rgba(0, 245, 255, 0.3);
             border-radius: 20px;
-            font-size: 12px;
-            color: #00f5ff;
+            font-size: 11px;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
+        .delete-icon {
+            background: #ff4444;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .delete-icon:hover {
+            background: #ff0000;
+            transform: rotate(90deg);
+        }
+
         .item-info {
-            display: flex;
-            flex-direction: column;
+            display: grid;
             gap: 12px;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             padding: 10px 0;
             border-bottom: 1px solid #2a2a3e;
         }
@@ -273,191 +308,234 @@
         }
 
         .info-label {
-            font-size: 13px;
             color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 13px;
         }
 
         .info-value {
-            font-size: 14px;
             color: #e0e0e0;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 14px;
         }
 
         .price-tag {
-            font-size: 18px;
-            font-weight: 700;
-            color: #00f5ff;
-        }
-
-        .delete-icon {
-            background: rgba(255, 0, 100, 0.1);
-            border: 1px solid rgba(255, 0, 100, 0.3);
-            color: #ff0064;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            cursor: pointer;
+            color: #00ff88;
             font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .delete-icon:hover {
-            background: rgba(255, 0, 100, 0.2);
-            transform: scale(1.1);
-        }
-
-        .filter-chips {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-
-        .filter-chip {
-            padding: 10px 20px;
-            background: #1a1a2e;
-            border: 1px solid #2a2a3e;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-            color: #888;
-        }
-
-        .filter-chip:hover {
-            border-color: #00f5ff;
-            color: #00f5ff;
-        }
-
-        .filter-chip.active {
-            background: rgba(0, 245, 255, 0.1);
-            border-color: #00f5ff;
-            color: #00f5ff;
-        }
-
-        .status-owned {
-            color: #00f5ff;
-            font-weight: 600;
-            font-size: 12px;
-            padding: 4px 12px;
-            background: rgba(0, 245, 255, 0.1);
-            border-radius: 12px;
-        }
-
-        .status-sold {
-            color: #ff00e5;
-            font-weight: 600;
-            font-size: 12px;
-            padding: 4px 12px;
-            background: rgba(255, 0, 229, 0.1);
-            border-radius: 12px;
+            font-weight: 700;
         }
 
         .profit-positive {
             color: #00ff88;
-            font-weight: 700;
         }
 
         .profit-negative {
-            color: #ff0064;
+            color: #ff4444;
+        }
+
+        .status-owned {
+            background: #00ff8833;
+            color: #00ff88;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 700;
         }
 
+        .status-sold {
+            background: #ffaa0033;
+            color: #ffaa00;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            background: #1a1a2e;
+            border: 1px solid #2a2a3e;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .filter-chip:hover {
+            border-color: #00f5ff;
+        }
+
+        .filter-chip.active {
+            background: linear-gradient(45deg, #00f5ff22, #ff00e522);
+            border-color: #00f5ff;
+        }
+
         .empty-state {
-            grid-column: 1 / -1;
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
             color: #666;
         }
 
         .empty-state-icon {
             font-size: 64px;
             margin-bottom: 20px;
-            opacity: 0.5;
+            opacity: 0.3;
         }
 
-        .empty-state p {
-            font-size: 16px;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 15, 35, 0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #2a2a3e;
-            border-top-color: #00f5ff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .sync-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            background: #1a1a2e;
-            border: 1px solid #2a2a3e;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #888;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 1000;
-        }
-
-        .sync-status.syncing {
-            border-color: #00f5ff;
+        /* Loading Indicator */
+        .loading {
+            text-align: center;
+            padding: 40px;
             color: #00f5ff;
         }
 
-        .sync-status.error {
-            border-color: #ff0064;
-            color: #ff0064;
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Modal for Delete Confirmation */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            border: 1px solid #2a2a3e;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-size: 20px;
+            color: #00f5ff;
+            margin-bottom: 15px;
+        }
+
+        .modal-body {
+            color: #e0e0e0;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background: #2a2a3e;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #3a3a4e;
+        }
+
+        .btn-delete {
+            background: linear-gradient(45deg, #ff4444, #ff0000);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 68, 68, 0.3);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 80px 20px 20px 20px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Loading overlay -->
-    <div class="loading-overlay" id="loading">
-        <div class="loading-spinner"></div>
-    </div>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
 
-    <!-- Sync status indicator -->
-    <div class="sync-status" id="sync-status" style="display: none;">
-        <span id="sync-text">Synced</span>
-    </div>
-
-    <div class="sidebar">
-        <div class="logo">Tech Tracker</div>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">🚀 MyCollection</div>
         <div class="nav-item active" onclick="showSection('dashboard')">
-            📊 Dashboard
+            <span>📊</span> Dashboard
         </div>
         <div class="nav-item" onclick="showSection('gadgets')">
-            📱 Gadgets
+            <span>📱</span> Gadgets
         </div>
         <div class="nav-item" onclick="showSection('games')">
-            🎮 Games
+            <span>🎮</span> Games
         </div>
     </div>
 
@@ -466,7 +544,7 @@
         <div id="dashboard" class="section active">
             <div class="header">
                 <h1>Dashboard</h1>
-                <p>Your collection overview</p>
+                <p>Your complete tech and gaming collection overview</p>
             </div>
 
             <div class="dashboard-grid">
@@ -479,28 +557,28 @@
                     <div class="stat-value" id="dash-gadgets-value">₹0</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Total Games</div>
+                    <div class="stat-label">Game Collection</div>
                     <div class="stat-value" id="dash-total-games">0</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Games Profit</div>
+                    <div class="stat-label">Games Profit/Loss</div>
                     <div class="stat-value" id="dash-games-profit">₹0</div>
                 </div>
             </div>
 
-            <h2 style="margin-bottom: 20px; color: #00f5ff;">Recent Items</h2>
+            <h2 style="color: #00f5ff; margin-bottom: 20px; font-size: 24px;">Recent Additions</h2>
             <div class="items-grid" id="recent-items"></div>
         </div>
 
         <!-- Gadgets Section -->
         <div id="gadgets" class="section">
             <div class="header">
-                <h1>Gadgets</h1>
-                <p>Track your tech purchases</p>
+                <h1>Gadgets Collection</h1>
+                <p>Track all your tech purchases and expenses</p>
             </div>
 
             <div class="add-card">
-                <h2>Add New Gadget</h2>
+                <h2>➕ Add New Gadget</h2>
                 <form id="gadget-form">
                     <div class="input-row">
                         <div class="input-group">
@@ -509,20 +587,20 @@
                         </div>
                         <div class="input-group">
                             <label>Category</label>
-                            <select id="g-category" required>
-                                <option value="Smartphone">Smartphone</option>
-                                <option value="Laptop">Laptop</option>
-                                <option value="Tablet">Tablet</option>
-                                <option value="Smartwatch">Smartwatch</option>
-                                <option value="Headphones">Headphones</option>
-                                <option value="Camera">Camera</option>
-                                <option value="Gaming">Gaming</option>
-                                <option value="Other">Other</option>
+                            <select id="g-category">
+                                <option>📱 Phone</option>
+                                <option>💻 Laptop</option>
+                                <option>⌚ Smartwatch</option>
+                                <option>🎧 Audio</option>
+                                <option>📷 Camera</option>
+                                <option>🎮 Gaming</option>
+                                <option>⚡ Accessories</option>
+                                <option>🔧 Other</option>
                             </select>
                         </div>
                         <div class="input-group">
                             <label>Price (₹)</label>
-                            <input type="number" id="g-price" step="0.01" required>
+                            <input type="number" id="g-price" required min="0" step="0.01">
                         </div>
                         <div class="input-group">
                             <label>Purchase Date</label>
@@ -532,10 +610,10 @@
                     <div class="input-row">
                         <div class="input-group">
                             <label>Notes (Optional)</label>
-                            <textarea id="g-notes"></textarea>
+                            <textarea id="g-notes" placeholder="Where you bought it, warranty info, etc..."></textarea>
                         </div>
                     </div>
-                    <button type="submit" class="btn">Add Gadget</button>
+                    <button type="submit" class="btn">Add to Collection</button>
                 </form>
             </div>
 
@@ -545,12 +623,12 @@
         <!-- Games Section -->
         <div id="games" class="section">
             <div class="header">
-                <h1>Games</h1>
-                <p>Track your game collection and flips</p>
+                <h1>Games Collection</h1>
+                <p>Manage your game discs and track buy/sell transactions</p>
             </div>
 
             <div class="add-card">
-                <h2>Add New Game</h2>
+                <h2>➕ Add New Game</h2>
                 <form id="game-form">
                     <div class="input-row">
                         <div class="input-group">
@@ -559,19 +637,18 @@
                         </div>
                         <div class="input-group">
                             <label>Platform</label>
-                            <select id="gm-platform" required>
-                                <option value="PS5">PlayStation 5</option>
-                                <option value="PS4">PlayStation 4</option>
-                                <option value="Xbox Series X/S">Xbox Series X/S</option>
-                                <option value="Xbox One">Xbox One</option>
-                                <option value="Nintendo Switch">Nintendo Switch</option>
-                                <option value="PC">PC</option>
-                                <option value="Other">Other</option>
+                            <select id="gm-platform">
+                                <option>PlayStation 5</option>
+                                <option>PlayStation 4</option>
+                                <option>Xbox Series X/S</option>
+                                <option>Xbox One</option>
+                                <option>Nintendo Switch</option>
+                                <option>PC</option>
                             </select>
                         </div>
                         <div class="input-group">
                             <label>Buy Price (₹)</label>
-                            <input type="number" id="gm-buy-price" step="0.01" required>
+                            <input type="number" id="gm-buy-price" required min="0" step="0.01">
                         </div>
                         <div class="input-group">
                             <label>Buy Date</label>
@@ -579,16 +656,16 @@
                         </div>
                         <div class="input-group">
                             <label>Condition</label>
-                            <select id="gm-condition" required>
-                                <option value="New">New</option>
-                                <option value="Like New">Like New</option>
-                                <option value="Good">Good</option>
-                                <option value="Fair">Fair</option>
+                            <select id="gm-condition">
+                                <option>New/Sealed</option>
+                                <option>Like New</option>
+                                <option>Good</option>
+                                <option>Fair</option>
                             </select>
                         </div>
                         <div class="input-group">
                             <label>Sell Price (₹) - Optional</label>
-                            <input type="number" id="gm-sell-price" step="0.01">
+                            <input type="number" id="gm-sell-price" min="0" step="0.01">
                         </div>
                         <div class="input-group">
                             <label>Sell Date - Optional</label>
@@ -598,14 +675,14 @@
                     <div class="input-row">
                         <div class="input-group">
                             <label>Notes (Optional)</label>
-                            <textarea id="gm-notes"></textarea>
+                            <textarea id="gm-notes" placeholder="Special editions, DLC included, etc..."></textarea>
                         </div>
                     </div>
-                    <button type="submit" class="btn">Add Game</button>
+                    <button type="submit" class="btn">Add to Collection</button>
                 </form>
             </div>
 
-            <div class="filter-chips">
+            <div class="filter-bar">
                 <div class="filter-chip active" onclick="filterGames('all')">All Games</div>
                 <div class="filter-chip" onclick="filterGames('owned')">Currently Owned</div>
                 <div class="filter-chip" onclick="filterGames('sold')">Sold</div>
@@ -615,10 +692,24 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-header">⚠️ Confirm Delete</div>
+            <div class="modal-body" id="deleteMessage">
+                Are you sure you want to delete this item? This action cannot be undone.
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-delete" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
         // Firebase configuration
         const firebaseConfig = {
@@ -639,139 +730,78 @@
         let gadgets = [];
         let games = [];
         let currentFilter = 'all';
+        let deleteCallback = null;
 
-        // Sync status indicator
-        function showSyncStatus(status, message) {
-            const syncStatus = document.getElementById('sync-status');
-            const syncText = document.getElementById('sync-text');
-            
-            syncStatus.style.display = 'flex';
-            syncText.textContent = message;
-            
-            syncStatus.classList.remove('syncing', 'error');
-            if (status === 'syncing') {
-                syncStatus.classList.add('syncing');
-            } else if (status === 'error') {
-                syncStatus.classList.add('error');
-            }
-            
-            if (status !== 'syncing') {
-                setTimeout(() => {
-                    syncStatus.style.display = 'none';
-                }, 3000);
-            }
-        }
+        // Mobile menu toggle
+        window.toggleMobileMenu = function() {
+            document.getElementById('sidebar').classList.toggle('mobile-open');
+        };
 
-        // Load data from Firebase
+        // Load data from Firestore
         async function loadData() {
             try {
-                showSyncStatus('syncing', 'Loading...');
-                
                 // Load gadgets
-                const gadgetsSnapshot = await getDocs(collection(db, 'gadgets'));
+                const gadgetsQuery = query(collection(db, 'gadgets'), orderBy('timestamp', 'desc'));
+                const gadgetsSnapshot = await getDocs(gadgetsQuery);
                 gadgets = gadgetsSnapshot.docs.map(doc => ({
-                    id: doc.id,
+                    firestoreId: doc.id,
                     ...doc.data()
                 }));
 
                 // Load games
-                const gamesSnapshot = await getDocs(collection(db, 'games'));
+                const gamesQuery = query(collection(db, 'games'), orderBy('timestamp', 'desc'));
+                const gamesSnapshot = await getDocs(gamesQuery);
                 games = gamesSnapshot.docs.map(doc => ({
-                    id: doc.id,
+                    firestoreId: doc.id,
                     ...doc.data()
                 }));
 
                 updateAll();
-                showSyncStatus('success', 'Synced');
-                document.getElementById('loading').style.display = 'none';
             } catch (error) {
                 console.error('Error loading data:', error);
-                showSyncStatus('error', 'Sync failed');
-                document.getElementById('loading').style.display = 'none';
+                alert('Error loading data. Please refresh the page.');
             }
         }
 
-        // Save gadget to Firebase
-        async function saveGadget(gadget) {
-            try {
-                showSyncStatus('syncing', 'Saving...');
-                await setDoc(doc(db, 'gadgets', String(gadget.id)), gadget);
-                showSyncStatus('success', 'Saved');
-            } catch (error) {
-                console.error('Error saving gadget:', error);
-                showSyncStatus('error', 'Save failed');
-                throw error;
-            }
-        }
-
-        // Save game to Firebase
-        async function saveGame(game) {
-            try {
-                showSyncStatus('syncing', 'Saving...');
-                await setDoc(doc(db, 'games', String(game.id)), game);
-                showSyncStatus('success', 'Saved');
-            } catch (error) {
-                console.error('Error saving game:', error);
-                showSyncStatus('error', 'Save failed');
-                throw error;
-            }
-        }
-
-        // Delete gadget from Firebase
-        async function deleteGadgetFromDB(id) {
-            try {
-                showSyncStatus('syncing', 'Deleting...');
-                await deleteDoc(doc(db, 'gadgets', String(id)));
-                showSyncStatus('success', 'Deleted');
-            } catch (error) {
-                console.error('Error deleting gadget:', error);
-                showSyncStatus('error', 'Delete failed');
-                throw error;
-            }
-        }
-
-        // Delete game from Firebase
-        async function deleteGameFromDB(id) {
-            try {
-                showSyncStatus('syncing', 'Deleting...');
-                await deleteDoc(doc(db, 'games', String(id)));
-                showSyncStatus('success', 'Deleted');
-            } catch (error) {
-                console.error('Error deleting game:', error);
-                showSyncStatus('error', 'Delete failed');
-                throw error;
-            }
-        }
-
-        // Navigation
-        window.showSection = function(sectionId) {
+        // Section navigation
+        window.showSection = function(section) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             
-            document.getElementById(sectionId).classList.add('active');
+            document.getElementById(section).classList.add('active');
             event.target.classList.add('active');
-        }
 
-        // Gadget handling
+            // Close mobile menu
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('mobile-open');
+            }
+        };
+
+        // Gadget form handler
         document.getElementById('gadget-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const newGadget = {
-                id: Date.now(),
+            const gadget = {
                 name: document.getElementById('g-name').value,
                 category: document.getElementById('g-category').value,
                 price: parseFloat(document.getElementById('g-price').value),
                 date: document.getElementById('g-date').value,
-                notes: document.getElementById('g-notes').value
+                notes: document.getElementById('g-notes').value,
+                timestamp: Date.now()
             };
 
-            gadgets.push(newGadget);
-            await saveGadget(newGadget);
-            updateAll();
-            e.target.reset();
-            document.getElementById('g-date').valueAsDate = new Date();
+            try {
+                await addDoc(collection(db, 'gadgets'), gadget);
+                await loadData();
+                e.target.reset();
+                document.getElementById('g-date').valueAsDate = new Date();
+            } catch (error) {
+                console.error('Error adding gadget:', error);
+                alert('Error adding gadget. Please try again.');
+            }
         });
 
+        // Render gadgets
         function renderGadgets() {
             const container = document.getElementById('gadgets-list');
             
@@ -792,7 +822,7 @@
                             <div class="item-title">${g.name}</div>
                             <span class="item-category">${g.category}</span>
                         </div>
-                        <button class="delete-icon" onclick="deleteGadget(${g.id})">×</button>
+                        <button class="delete-icon" onclick="window.deleteGadget('${g.firestoreId}', '${g.name}')">×</button>
                     </div>
                     <div class="item-info">
                         <div class="info-row">
@@ -814,23 +844,31 @@
             `).join('');
         }
 
-        window.deleteGadget = async function(id) {
-            if (confirm('Delete this gadget?')) {
-                gadgets = gadgets.filter(g => g.id !== id);
-                await deleteGadgetFromDB(id);
-                updateAll();
-            }
-        }
+        // Delete gadget with confirmation
+        window.deleteGadget = function(firestoreId, name) {
+            document.getElementById('deleteMessage').textContent = 
+                `Are you sure you want to delete "${name}"? This action cannot be undone.`;
+            document.getElementById('deleteModal').classList.add('active');
+            
+            deleteCallback = async () => {
+                try {
+                    await deleteDoc(doc(db, 'gadgets', firestoreId));
+                    await loadData();
+                } catch (error) {
+                    console.error('Error deleting gadget:', error);
+                    alert('Error deleting gadget. Please try again.');
+                }
+            };
+        };
 
-        // Game handling
+        // Game form handler
         document.getElementById('game-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const sellPrice = document.getElementById('gm-sell-price').value;
             const sellDate = document.getElementById('gm-sell-date').value;
 
-            const newGame = {
-                id: Date.now(),
+            const game = {
                 title: document.getElementById('gm-title').value,
                 platform: document.getElementById('gm-platform').value,
                 buyPrice: parseFloat(document.getElementById('gm-buy-price').value),
@@ -839,23 +877,30 @@
                 sellPrice: sellPrice ? parseFloat(sellPrice) : null,
                 sellDate: sellDate || null,
                 notes: document.getElementById('gm-notes').value,
-                status: (sellPrice && sellDate) ? 'sold' : 'owned'
+                status: (sellPrice && sellDate) ? 'sold' : 'owned',
+                timestamp: Date.now()
             };
 
-            games.push(newGame);
-            await saveGame(newGame);
-            updateAll();
-            e.target.reset();
-            document.getElementById('gm-buy-date').valueAsDate = new Date();
+            try {
+                await addDoc(collection(db, 'games'), game);
+                await loadData();
+                e.target.reset();
+                document.getElementById('gm-buy-date').valueAsDate = new Date();
+            } catch (error) {
+                console.error('Error adding game:', error);
+                alert('Error adding game. Please try again.');
+            }
         });
 
+        // Filter games
         window.filterGames = function(filter) {
             currentFilter = filter;
             document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
             event.target.classList.add('active');
             renderGames();
-        }
+        };
 
+        // Render games
         function renderGames() {
             const container = document.getElementById('games-list');
             let filtered = games;
@@ -884,7 +929,7 @@
                                 <div class="item-title">${g.title}</div>
                                 <span class="item-category">${g.platform}</span>
                             </div>
-                            <button class="delete-icon" onclick="deleteGame(${g.id})">×</button>
+                            <button class="delete-icon" onclick="window.deleteGame('${g.firestoreId}', '${g.title}')">×</button>
                         </div>
                         <div class="item-info">
                             <div class="info-row">
@@ -925,14 +970,37 @@
             }).join('');
         }
 
-        window.deleteGame = async function(id) {
-            if (confirm('Delete this game?')) {
-                games = games.filter(g => g.id !== id);
-                await deleteGameFromDB(id);
-                updateAll();
-            }
-        }
+        // Delete game with confirmation
+        window.deleteGame = function(firestoreId, title) {
+            document.getElementById('deleteMessage').textContent = 
+                `Are you sure you want to delete "${title}"? This action cannot be undone.`;
+            document.getElementById('deleteModal').classList.add('active');
+            
+            deleteCallback = async () => {
+                try {
+                    await deleteDoc(doc(db, 'games', firestoreId));
+                    await loadData();
+                } catch (error) {
+                    console.error('Error deleting game:', error);
+                    alert('Error deleting game. Please try again.');
+                }
+            };
+        };
 
+        // Modal functions
+        window.closeDeleteModal = function() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deleteCallback = null;
+        };
+
+        window.confirmDelete = async function() {
+            if (deleteCallback) {
+                await deleteCallback();
+                closeDeleteModal();
+            }
+        };
+
+        // Update dashboard
         function updateDashboard() {
             const totalGadgets = gadgets.length;
             const gadgetsValue = gadgets.reduce((sum, g) => sum + g.price, 0);
@@ -948,7 +1016,7 @@
 
             // Recent items
             const recent = [...gadgets, ...games]
-                .sort((a, b) => b.id - a.id)
+                .sort((a, b) => b.timestamp - a.timestamp)
                 .slice(0, 6);
 
             const recentContainer = document.getElementById('recent-items');
