@@ -2073,19 +2073,23 @@ async function loadSettings() {
             };
 
             try {
-                if (window.editingGadgetId) {
-                    // Update existing gadget
-                    await deleteDoc(doc(db, 'users', currentUserUID, 'gadgets', window.editingGadgetId));
+               if (window.editingGadgetId) {
 
-            await addDoc(
-            collection(db, 'users', currentUserUID, 'gadgets'),
-            gadget
-            );
-                    window.editingGadgetId = null;
-                    document.querySelector('#gadget-form .btn').textContent = 'Add to Collection';
-                } else {
-                    // Add new gadget
-                   if (window.editingGadgetId) {
+    await updateDoc(
+        doc(db, 'users', currentUserUID, 'gadgets', window.editingGadgetId),
+        gadget
+    );
+
+    window.editingGadgetId = null;
+    document.querySelector('#gadget-form .btn').textContent = 'Add to Collection';
+
+} else {
+
+    await addDoc(
+        collection(db, 'users', currentUserUID, 'gadgets'),
+        gadget
+    );
+}
 
     // ✅ UPDATE existing gadget
     await updateDoc(
@@ -2228,7 +2232,7 @@ document.getElementById('g-date').valueAsDate = new Date();
             
             deleteCallback = async () => {
                 try {
-                    await deleteDoc(doc(db, 'gadgets', firestoreId));
+                    await deleteDoc(doc(db, 'users', currentUserUID, 'gadgets', firestoreId));
                     await loadData();
                 } catch (error) {
                     console.error('Error deleting gadget:', error);
@@ -2420,7 +2424,7 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
             
             deleteCallback = async () => {
                 try {
-                    await deleteDoc(doc(db, 'games', firestoreId));
+                    await deleteDoc(doc(db, 'users', currentUserUID, 'games', firestoreId));
                     await loadData();
                 } catch (error) {
                     console.error('Error deleting game:', error);
@@ -2623,7 +2627,7 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
 
             try {
                 if (window.editingDigitalId) {
-                    await deleteDoc(doc(db, 'digitalPurchases', window.editingDigitalId));
+                    await deleteDoc(doc(db, 'users', currentUserUID, 'digitalPurchases', window.editingDigitalId));
                     await addDoc(collection(db, 'digitalPurchases'), digital);
                     window.editingDigitalId = null;
                     document.querySelector('#digital-form .btn').textContent = 'Add Purchase';
