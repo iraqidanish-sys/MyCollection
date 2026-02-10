@@ -646,23 +646,28 @@
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
 
     <div class="sidebar" id="sidebar">
-        <div class="logo">🚀 MyCollection</div>
-        <div class="nav-item active" onclick="window.showSection('dashboard')">
-            <span>📊</span> Dashboard
-        </div>
-        <div class="nav-item" onclick="window.showSection('gadgets')">
-            <span>📱</span> Gadgets
-        </div>
-        <div class="nav-item" onclick="window.showSection('games')">
-            <span>🎮</span> Games
-        </div>
-        <div class="nav-item" onclick="window.showSection('digital')">
-            <span>💳</span> Digital Purchases
-        </div>
-        <div class="nav-item" onclick="window.showSection('settings')">
-            <span>⚙️</span> Settings
-        </div>
+    <div class="logo">🚀 MyCollection</div>
+
+    <div class="nav-item active" onclick="window.showSection('dashboard', this)">
+        <span>📊</span> Dashboard
     </div>
+
+    <div class="nav-item" onclick="window.showSection('gadgets', this)">
+        <span>📱</span> Gadgets
+    </div>
+
+    <div class="nav-item" onclick="window.showSection('games', this)">
+        <span>🎮</span> Games
+    </div>
+
+    <div class="nav-item" onclick="window.showSection('digital', this)">
+        <span>💳</span> Digital Purchases
+    </div>
+
+    <div class="nav-item" onclick="window.showSection('settings', this)">
+        <span>⚙️</span> Settings
+    </div>
+</div>
 
     <div class="main-content">
         <!-- Dashboard Section -->
@@ -1987,18 +1992,18 @@
         }
 
         // Section navigation
-        window.showSection = function(section) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById(section).classList.add('active');
-            event.target.classList.add('active');
+       window.showSection = function(section, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    
+    document.getElementById(section).classList.add('active');
 
-            // Close mobile menu
-            if (window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('mobile-open');
-            }
-        };
+    if (el) el.classList.add('active');
+
+    if (window.innerWidth <= 768) {
+        document.getElementById('sidebar').classList.remove('mobile-open');
+    }
+};
 
         // Gadget form handler
         document.getElementById('gadget-form').addEventListener('submit', async (e) => {
