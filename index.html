@@ -229,22 +229,22 @@
 
         .items-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
         }
 
         .item-card {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             border: 1px solid #2a2a3e;
-            border-radius: 15px;
-            padding: 25px;
+            border-radius: 12px;
+            padding: 15px;
             position: relative;
             transition: all 0.3s;
         }
 
         .item-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(0, 245, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 245, 255, 0.2);
             border-color: #00f5ff44;
         }
 
@@ -252,23 +252,24 @@
             display: flex;
             justify-content: space-between;
             align-items: start;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         .item-title {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
             color: #00f5ff;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            line-height: 1.3;
         }
 
         .item-category {
             display: inline-block;
             background: #ff00e533;
             color: #ff00e5;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -277,12 +278,12 @@
         .delete-icon {
             background: #ff4444;
             border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
             cursor: pointer;
             color: white;
-            font-size: 18px;
+            font-size: 16px;
             transition: all 0.3s;
         }
 
@@ -294,11 +295,11 @@
         .edit-icon {
             background: #00f5ff;
             border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 8px;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             transition: all 0.3s;
         }
 
@@ -309,13 +310,13 @@
 
         .item-info {
             display: grid;
-            gap: 12px;
+            gap: 8px;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
+            padding: 6px 0;
             border-bottom: 1px solid #2a2a3e;
         }
 
@@ -325,18 +326,18 @@
 
         .info-label {
             color: #888;
-            font-size: 13px;
+            font-size: 11px;
         }
 
         .info-value {
             color: #e0e0e0;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .price-tag {
             color: #00ff88;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
         }
 
@@ -351,18 +352,18 @@
         .status-owned {
             background: #00ff8833;
             color: #00ff88;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 10px;
             font-weight: 700;
         }
 
         .status-sold {
             background: #ffaa0033;
             color: #ffaa00;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 10px;
             font-weight: 700;
         }
 
@@ -569,16 +570,32 @@
                     <div class="stat-value" id="dash-total-gadgets">0</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Gadgets Value</div>
+                    <div class="stat-label">Current Gadgets Value</div>
                     <div class="stat-value" id="dash-gadgets-value">₹0</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Game Collection</div>
+                    <div class="stat-label">Gadgets Sold</div>
+                    <div class="stat-value" id="dash-gadgets-sold">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Gadgets Profit/Loss</div>
+                    <div class="stat-value" id="dash-gadgets-profit">₹0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Total Games</div>
                     <div class="stat-value" id="dash-total-games">0</div>
                 </div>
                 <div class="stat-box">
+                    <div class="stat-label">Games Sold</div>
+                    <div class="stat-value" id="dash-games-sold">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Games Profit/Loss</div>
+                    <div class="stat-value" id="dash-games-profit-stat">₹0</div>
+                </div>
+                <div class="stat-box">
                     <div class="stat-label">Total Profit/Loss</div>
-                    <div class="stat-value" id="dash-games-profit">₹0</div>
+                    <div class="stat-value" id="dash-total-profit">₹0</div>
                 </div>
             </div>
 
@@ -591,6 +608,19 @@
             <div class="header">
                 <h1>Gadgets Collection</h1>
                 <p>Track all your tech purchases and expenses</p>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="btn" onclick="window.exportGadgetsCSV()" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
+                    📥 Export to TSV
+                </button>
+                <button class="btn" onclick="document.getElementById('gadget-import').click()" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
+                    📤 Import from TSV/CSV
+                </button>
+                <button class="btn" onclick="window.downloadGadgetTemplate()" style="background: linear-gradient(45deg, #FF9800, #F57C00);">
+                    📋 Download Template
+                </button>
+                <input type="file" id="gadget-import" accept=".csv,.tsv,.txt" style="display: none;" onchange="window.importGadgetsCSV(event)">
             </div>
 
             <div class="add-card">
@@ -659,6 +689,19 @@
             <div class="header">
                 <h1>Games Collection</h1>
                 <p>Manage your game discs and track buy/sell transactions</p>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="btn" onclick="window.exportGamesCSV()" style="background: linear-gradient(45deg, #4CAF50, #45a049);">
+                    📥 Export to TSV
+                </button>
+                <button class="btn" onclick="document.getElementById('game-import').click()" style="background: linear-gradient(45deg, #2196F3, #1976D2);">
+                    📤 Import from TSV/CSV
+                </button>
+                <button class="btn" onclick="window.downloadGameTemplate()" style="background: linear-gradient(45deg, #FF9800, #F57C00);">
+                    📋 Download Template
+                </button>
+                <input type="file" id="game-import" accept=".csv,.tsv,.txt" style="display: none;" onchange="window.importGamesCSV(event)">
             </div>
 
             <div class="add-card">
@@ -1229,24 +1272,50 @@
 
         // Update dashboard
         function updateDashboard() {
+            // Gadgets stats
             const totalGadgets = gadgets.length;
-            const gadgetsValue = gadgets.reduce((sum, g) => sum + g.price, 0);
-            const gadgetsProfit = gadgets
-                .filter(g => g.sellPrice)
-                .reduce((sum, g) => sum + (g.sellPrice - g.price), 0);
+            const ownedGadgets = gadgets.filter(g => g.status === 'owned');
+            const soldGadgets = gadgets.filter(g => g.status === 'sold');
+            const currentGadgetsValue = ownedGadgets.reduce((sum, g) => sum + g.price, 0);
+            const gadgetsProfit = soldGadgets.reduce((sum, g) => sum + (g.sellPrice - g.price), 0);
             
+            // Games stats
             const totalGames = games.length;
-            const gamesProfit = games
-                .filter(g => g.sellPrice)
-                .reduce((sum, g) => sum + (g.sellPrice - g.buyPrice), 0);
+            const ownedGames = games.filter(g => g.status === 'owned');
+            const soldGames = games.filter(g => g.status === 'sold');
+            const gamesProfit = soldGames.reduce((sum, g) => sum + (g.sellPrice - g.buyPrice), 0);
 
+            // Update dashboard
             document.getElementById('dash-total-gadgets').textContent = totalGadgets;
-            document.getElementById('dash-gadgets-value').textContent = `₹${gadgetsValue.toFixed(0)}`;
-            document.getElementById('dash-total-games').textContent = totalGames;
+            document.getElementById('dash-gadgets-value').textContent = `₹${currentGadgetsValue.toFixed(0)}`;
+            document.getElementById('dash-gadgets-sold').textContent = soldGadgets.length;
+            document.getElementById('dash-gadgets-profit').textContent = `₹${gadgetsProfit.toFixed(0)}`;
             
-            // Update games profit to show combined profit/loss
+            document.getElementById('dash-total-games').textContent = totalGames;
+            document.getElementById('dash-games-sold').textContent = soldGames.length;
+            document.getElementById('dash-games-profit-stat').textContent = `₹${gamesProfit.toFixed(0)}`;
+            
+            // Total profit/loss
             const totalProfit = gadgetsProfit + gamesProfit;
-            document.getElementById('dash-games-profit').textContent = `₹${totalProfit.toFixed(0)}`;
+            document.getElementById('dash-total-profit').textContent = `₹${totalProfit.toFixed(0)}`;
+
+            // Color code profit/loss
+            const profitElements = [
+                document.getElementById('dash-gadgets-profit'),
+                document.getElementById('dash-games-profit-stat'),
+                document.getElementById('dash-total-profit')
+            ];
+            
+            profitElements.forEach((el, idx) => {
+                const value = idx === 0 ? gadgetsProfit : idx === 1 ? gamesProfit : totalProfit;
+                if (value > 0) {
+                    el.style.color = '#4CAF50';
+                } else if (value < 0) {
+                    el.style.color = '#f44336';
+                } else {
+                    el.style.color = '#00f5ff';
+                }
+            });
 
             // Recent items
             const recent = [...gadgets, ...games]
@@ -1312,6 +1381,232 @@
             renderGames();
             updateDashboard();
         }
+
+        // TSV/CSV Export for Gadgets
+        window.exportGadgetsCSV = function() {
+            if (gadgets.length === 0) {
+                alert('No gadgets to export!');
+                return;
+            }
+
+            const headers = ['Name', 'Category', 'Price', 'Purchase Date', 'Sell Price', 'Sell Date', 'Status', 'Notes'];
+            const rows = gadgets.map(g => [
+                g.name,
+                g.category,
+                g.price,
+                g.date,
+                g.sellPrice || '',
+                g.sellDate || '',
+                g.status || 'owned',
+                g.notes || ''
+            ]);
+
+            const tsv = [headers, ...rows]
+                .map(row => row.join('\t'))
+                .join('\n');
+
+            const blob = new Blob([tsv], { type: 'text/tab-separated-values' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `gadgets_export_${new Date().toISOString().split('T')[0]}.tsv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // Download Gadget Template
+        window.downloadGadgetTemplate = function() {
+            const headers = ['Name', 'Category', 'Price', 'Purchase Date', 'Sell Price', 'Sell Date', 'Status', 'Notes'];
+            const exampleRow = ['iPhone 15 Pro', '📱 Phone', '119900', '2024-01-15', '95000', '2025-02-01', 'sold', 'Upgraded to 16'];
+            
+            const tsv = [headers, exampleRow].map(row => row.join('\t')).join('\n');
+            
+            const blob = new Blob([tsv], { type: 'text/tab-separated-values' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'gadgets_template.tsv';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Template downloaded! Open it in Excel or Google Sheets, fill in your data (one item per row), and import it back.');
+        };
+
+        // TSV/CSV Import for Gadgets
+        window.importGadgetsCSV = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim());
+                    
+                    // Detect delimiter (tab or comma)
+                    const delimiter = lines[0].includes('\t') ? '\t' : ',';
+                    
+                    // Skip header row
+                    const dataLines = lines.slice(1);
+                    
+                    let imported = 0;
+                    for (const line of dataLines) {
+                        let values;
+                        if (delimiter === '\t') {
+                            // TSV - simple split
+                            values = line.split('\t');
+                        } else {
+                            // CSV - handle quoted values
+                            const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                            if (!matches) continue;
+                            values = matches.map(v => v.replace(/^"|"$/g, '').trim());
+                        }
+                        
+                        if (values.length < 3) continue;
+                        
+                        const gadget = {
+                            name: values[0]?.trim() || '',
+                            category: values[1]?.trim() || '🔧 Other',
+                            price: parseFloat(values[2]) || 0,
+                            date: values[3]?.trim() || new Date().toISOString().split('T')[0],
+                            sellPrice: values[4]?.trim() ? parseFloat(values[4]) : null,
+                            sellDate: values[5]?.trim() || null,
+                            status: values[6]?.trim() || 'owned',
+                            notes: values[7]?.trim() || '',
+                            timestamp: Date.now()
+                        };
+
+                        if (gadget.name && gadget.price) {
+                            await addDoc(collection(db, 'gadgets'), gadget);
+                            imported++;
+                        }
+                    }
+
+                    alert(`Successfully imported ${imported} gadget(s)!`);
+                    await loadData();
+                    event.target.value = ''; // Reset file input
+                } catch (error) {
+                    console.error('Import error:', error);
+                    alert('Error importing file. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        // TSV/CSV Export for Games
+        window.exportGamesCSV = function() {
+            if (games.length === 0) {
+                alert('No games to export!');
+                return;
+            }
+
+            const headers = ['Title', 'Platform', 'Genre', 'Buy Price', 'Buy Date', 'Condition', 'Sell Price', 'Sell Date', 'Status', 'Notes'];
+            const rows = games.map(g => [
+                g.title,
+                g.platform,
+                g.genre || '',
+                g.buyPrice,
+                g.buyDate,
+                g.condition,
+                g.sellPrice || '',
+                g.sellDate || '',
+                g.status || 'owned',
+                g.notes || ''
+            ]);
+
+            const tsv = [headers, ...rows]
+                .map(row => row.join('\t'))
+                .join('\n');
+
+            const blob = new Blob([tsv], { type: 'text/tab-separated-values' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `games_export_${new Date().toISOString().split('T')[0]}.tsv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+
+        // Download Game Template
+        window.downloadGameTemplate = function() {
+            const headers = ['Title', 'Platform', 'Genre', 'Buy Price', 'Buy Date', 'Condition', 'Sell Price', 'Sell Date', 'Status', 'Notes'];
+            const exampleRow = ['Spider-Man 2', 'PlayStation 5', '🎯 Action', '3999', '2024-06-01', 'Mint', '2500', '2025-01-15', 'sold', 'Completed'];
+            
+            const tsv = [headers, exampleRow].map(row => row.join('\t')).join('\n');
+            
+            const blob = new Blob([tsv], { type: 'text/tab-separated-values' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'games_template.tsv';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('Template downloaded! Open it in Excel or Google Sheets, fill in your data (one game per row), and import it back.');
+        };
+
+        // TSV/CSV Import for Games
+        window.importGamesCSV = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const text = e.target.result;
+                    const lines = text.split('\n').filter(line => line.trim());
+                    
+                    // Detect delimiter (tab or comma)
+                    const delimiter = lines[0].includes('\t') ? '\t' : ',';
+                    
+                    // Skip header row
+                    const dataLines = lines.slice(1);
+                    
+                    let imported = 0;
+                    for (const line of dataLines) {
+                        let values;
+                        if (delimiter === '\t') {
+                            // TSV - simple split
+                            values = line.split('\t');
+                        } else {
+                            // CSV - handle quoted values
+                            const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+                            if (!matches) continue;
+                            values = matches.map(v => v.replace(/^"|"$/g, '').trim());
+                        }
+                        
+                        if (values.length < 6) continue;
+                        
+                        const game = {
+                            title: values[0]?.trim() || '',
+                            platform: values[1]?.trim() || 'PlayStation 5',
+                            genre: values[2]?.trim() || '🎯 Action',
+                            buyPrice: parseFloat(values[3]) || 0,
+                            buyDate: values[4]?.trim() || new Date().toISOString().split('T')[0],
+                            condition: values[5]?.trim() || 'Good',
+                            sellPrice: values[6]?.trim() ? parseFloat(values[6]) : null,
+                            sellDate: values[7]?.trim() || null,
+                            status: values[8]?.trim() || 'owned',
+                            notes: values[9]?.trim() || '',
+                            timestamp: Date.now()
+                        };
+
+                        if (game.title && game.buyPrice) {
+                            await addDoc(collection(db, 'games'), game);
+                            imported++;
+                        }
+                    }
+
+                    alert(`Successfully imported ${imported} game(s)!`);
+                    await loadData();
+                    event.target.value = ''; // Reset file input
+                } catch (error) {
+                    console.error('Import error:', error);
+                    alert('Error importing file. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        };
 
         // Initialize
         document.getElementById('g-date').valueAsDate = new Date();
