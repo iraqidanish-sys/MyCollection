@@ -545,16 +545,16 @@
 
     <div class="sidebar" id="sidebar">
         <div class="logo">🚀 MyCollection</div>
-        <div class="nav-item active" onclick="showSection('dashboard')">
+        <div class="nav-item active" onclick="window.showSection('dashboard')">
             <span>📊</span> Dashboard
         </div>
-        <div class="nav-item" onclick="showSection('gadgets')">
+        <div class="nav-item" onclick="window.showSection('gadgets')">
             <span>📱</span> Gadgets
         </div>
-        <div class="nav-item" onclick="showSection('games')">
+        <div class="nav-item" onclick="window.showSection('games')">
             <span>🎮</span> Games
         </div>
-        <div class="nav-item" onclick="showSection('digital')">
+        <div class="nav-item" onclick="window.showSection('digital')">
             <span>💳</span> Digital Purchases
         </div>
     </div>
@@ -799,9 +799,9 @@
             </div>
 
             <div class="filter-bar">
-                <div class="filter-chip active" onclick="filterGames('all')">All Games</div>
-                <div class="filter-chip" onclick="filterGames('owned')">Currently Owned</div>
-                <div class="filter-chip" onclick="filterGames('sold')">Sold</div>
+                <div class="filter-chip active" onclick="window.filterGames(event, 'all')">All Games</div>
+                <div class="filter-chip" onclick="window.filterGames(event, 'owned')">Currently Owned</div>
+                <div class="filter-chip" onclick="window.filterGames(event, 'sold')">Sold</div>
             </div>
 
             <div class="items-grid" id="games-list"></div>
@@ -1030,8 +1030,6 @@
         });
 
         // Gadget filter
-        let currentGadgetFilter = 'all';
-
         window.filterGadgets = function(event, filter) {
             currentGadgetFilter = filter;
             document.querySelectorAll('#gadgets .filter-chip').forEach(c => c.classList.remove('active'));
@@ -1225,9 +1223,9 @@
         });
 
         // Filter games
-        window.filterGames = function(filter) {
+        window.filterGames = function(event, filter) {
             currentFilter = filter;
-            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('#games .filter-chip').forEach(c => c.classList.remove('active'));
             event.target.classList.add('active');
             renderGames();
         };
@@ -1374,7 +1372,7 @@
         window.confirmDelete = async function() {
             if (deleteCallback) {
                 await deleteCallback();
-                closeDeleteModal();
+                window.closeDeleteModal();
             }
         };
 
