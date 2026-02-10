@@ -1278,17 +1278,6 @@
     }
 
 });
-                // Load settings and data after successful login
-                loadSettings();
-                loadData();
-            } else {
-                // User is signed out
-                currentUser = null;
-                document.getElementById('loginScreen').style.display = 'flex';
-                document.getElementById('mainApp').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'none';
-            }
-        });
 
         // Google Sign In
         document.getElementById('googleSignInBtn').addEventListener('click', async () => {
