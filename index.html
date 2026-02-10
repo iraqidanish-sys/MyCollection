@@ -538,6 +538,92 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Custom Dropdown Styles */
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .custom-select-trigger {
+            background: #16213e;
+            border: 1px solid #2a2a3e;
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: #e0e0e0;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .custom-select-trigger:hover {
+            border-color: #00f5ff;
+        }
+
+        .custom-select-trigger.active {
+            border-color: #00f5ff;
+            box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.1);
+        }
+
+        .custom-select-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            background: rgba(255,255,255,0.1);
+            padding: 2px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .custom-select-arrow {
+            margin-left: auto;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+
+        .custom-select-trigger.active .custom-select-arrow {
+            transform: rotate(180deg);
+        }
+
+        .custom-select-options {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #16213e;
+            border: 1px solid #2a2a3e;
+            border-radius: 8px;
+            margin-top: 4px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .custom-select-options.active {
+            display: block;
+        }
+
+        .custom-select-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .custom-select-option:hover {
+            background: #2a2a3e;
+        }
+
+        .custom-select-option.selected {
+            background: rgba(0, 245, 255, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -730,22 +816,11 @@
                         </div>
                         <div class="input-group">
                             <label>Platform</label>
-                            <select id="gm-platform">
-                                <!-- Replace icons below with custom console icons if needed -->
-                                <option value="🟦 PlayStation 5">🟦 PlayStation 5</option>
-                                <option value="🟦 PlayStation 4">🟦 PlayStation 4</option>
-                                <option value="🟦 PlayStation 3">🟦 PlayStation 3</option>
-                                <option value="🟩 Xbox Series X/S">🟩 Xbox Series X/S</option>
-                                <option value="🟩 Xbox One">🟩 Xbox One</option>
-                                <option value="🟩 Xbox 360">🟩 Xbox 360</option>
-                                <option value="🔴 Nintendo Switch">🔴 Nintendo Switch</option>
-                                <option value="🔵 Nintendo Wii U">🔵 Nintendo Wii U</option>
-                                <option value="⚪ Nintendo Wii">⚪ Nintendo Wii</option>
-                                <option value="💻 PC">💻 PC</option>
-                                <option value="📱 Mobile">📱 Mobile</option>
-                                <option value="🕹️ Retro">🕹️ Retro</option>
-                                <option value="🎮 Other">🎮 Other</option>
-                            </select>
+                            <div class="custom-select-wrapper" id="platform-select-wrapper">
+                                <select id="gm-platform">
+                                    <!-- Options populated by updateAllDropdowns() -->
+                                </select>
+                            </div>
                         </div>
                         <div class="input-group">
                             <label>Genre</label>
@@ -1289,6 +1364,96 @@
             updateDropdown('gm-genre', gameGenres);
             updateDropdown('d-type', digitalTypes);
             updateIconPlatformDropdown();
+            createCustomPlatformDropdown(); // Create visual dropdown with icons
+        }
+
+        function createCustomPlatformDropdown() {
+            const wrapper = document.getElementById('platform-select-wrapper');
+            const select = document.getElementById('gm-platform');
+            if (!wrapper || !select) return;
+
+            // Remove existing custom dropdown if any
+            const existing = wrapper.querySelector('.custom-select-trigger');
+            if (existing) {
+                existing.remove();
+                wrapper.querySelector('.custom-select-options')?.remove();
+            }
+
+            // Get current value
+            const currentValue = select.value || gamePlatforms[0];
+            const currentIcon = getCustomIconForPlatform(currentValue);
+            const displayText = removeEmojiFromText(currentValue);
+
+            // Create trigger
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-select-trigger';
+            trigger.innerHTML = currentIcon 
+                ? '<img src="' + currentIcon.iconUrl + '" class="custom-select-icon" alt="' + currentValue + '">' + displayText + '<span class="custom-select-arrow">▼</span>'
+                : displayText + '<span class="custom-select-arrow">▼</span>';
+
+            // Create options container
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'custom-select-options';
+
+            gamePlatforms.forEach(platform => {
+                const option = document.createElement('div');
+                option.className = 'custom-select-option';
+                if (platform === currentValue) option.classList.add('selected');
+                
+                const icon = getCustomIconForPlatform(platform);
+                const text = removeEmojiFromText(platform);
+                
+                option.innerHTML = icon 
+                    ? '<img src="' + icon.iconUrl + '" class="custom-select-icon" alt="' + platform + '">' + text
+                    : text;
+                
+                option.onclick = () => {
+                    select.value = platform;
+                    trigger.innerHTML = icon 
+                        ? '<img src="' + icon.iconUrl + '" class="custom-select-icon" alt="' + platform + '">' + text + '<span class="custom-select-arrow">▼</span>'
+                        : text + '<span class="custom-select-arrow">▼</span>';
+                    optionsContainer.classList.remove('active');
+                    trigger.classList.remove('active');
+                    document.querySelectorAll('.custom-select-option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                };
+
+                optionsContainer.appendChild(option);
+            });
+
+            // Toggle dropdown
+            trigger.onclick = () => {
+                trigger.classList.toggle('active');
+                optionsContainer.classList.toggle('active');
+            };
+
+            // Close on outside click
+            document.addEventListener('click', (e) => {
+                if (!wrapper.contains(e.target)) {
+                    trigger.classList.remove('active');
+                    optionsContainer.classList.remove('active');
+                }
+            });
+
+            wrapper.insertBefore(trigger, select);
+            wrapper.appendChild(optionsContainer);
+        }
+
+        function getCustomIconForPlatform(platform) {
+            // Try exact match
+            let icon = customIcons.find(icon => icon.platform === platform);
+            if (icon) return icon;
+            
+            // Try fuzzy match
+            const cleanPlatform = platform.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u206F\u2700-\u27BF\uE000-\uF8FF\uD800-\uDFFF]/g, '').replace(/\s+/g, ' ').trim();
+            return customIcons.find(icon => {
+                const cleanIcon = icon.platform.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u206F\u2700-\u27BF\uE000-\uF8FF\uD800-\uDFFF]/g, '').replace(/\s+/g, ' ').trim();
+                return cleanIcon === cleanPlatform;
+            });
+        }
+
+        function removeEmojiFromText(text) {
+            return text.replace(/[\u0000-\u001F\u007F-\u009F\u2000-\u206F\u2700-\u27BF\uE000-\uF8FF\uD800-\uDFFF]/g, '').replace(/\s+/g, ' ').trim();
         }
 
         function updateIconPlatformDropdown() {
