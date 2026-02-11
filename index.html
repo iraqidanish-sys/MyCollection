@@ -1244,6 +1244,7 @@
         // Global user state
         let currentUser = null;
         let currentUserUID = null;
+        let currentCurrency = '₹';  // ← ADD THIS LINE
 
         // ========== ADMIN CONFIGURATION ==========
 const ADMIN_EMAILS = [
@@ -2180,11 +2181,14 @@ async function loadSettings() {
         }
 
         // Section navigation
-       window.showSection = function(section, el) {
+    window.showSection = function(section, el) {
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     
-    document.getElementById(section).classList.add('active');
+    const sectionElement = document.getElementById(section);
+    if (sectionElement) {  // ← ADD THIS CHECK
+        sectionElement.classList.add('active');
+    }
 
     if (el) el.classList.add('active');
 
