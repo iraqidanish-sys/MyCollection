@@ -111,6 +111,21 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
 
+        .nav-icon {
+            flex-shrink: 0;
+            stroke: currentColor;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover .nav-icon {
+            stroke: #10b981;
+            transform: scale(1.1);
+        }
+
+        .nav-item.active .nav-icon {
+            stroke: #10b981;
+        }
+
         .main-content {
             margin-left: 260px;
             padding: 40px;
@@ -768,30 +783,65 @@
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
     
     <div class="sidebar" id="sidebar">
-        <div class="logo">🚀 MyCollection</div>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+            </svg>
+            MyCollection
+        </div>
         
         <div class="nav-item active" onclick="window.showSection('dashboard', this)">
-            <span>📊</span> Dashboard
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            Dashboard
         </div>
         
         <div class="nav-item" onclick="window.showSection('gadgets', this)">
-            <span>📱</span> Gadgets
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+            Gadgets
         </div>
         
         <div class="nav-item" onclick="window.showSection('games', this)">
-            <span>🎮</span> Games
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="6" y1="11" x2="10" y2="11"></line>
+                <line x1="8" y1="9" x2="8" y2="13"></line>
+                <line x1="15" y1="12" x2="15.01" y2="12"></line>
+                <line x1="18" y1="10" x2="18.01" y2="10"></line>
+                <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path>
+            </svg>
+            Games
         </div>
         
         <div class="nav-item" onclick="window.showSection('digital', this)">
-            <span>💳</span> Digital Purchases
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            Digital Purchases
         </div>
         
         <div class="nav-item" onclick="window.showSection('settings', this)">
-            <span>⚙️</span> Settings
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6m-5.2-3.8l4.2-4.2m2.8 2.8l4.2-4.2M1 12h6m6 0h6m-3.8 5.2l-4.2-4.2m-2.8 2.8l-4.2 4.2"></path>
+            </svg>
+            Settings
         </div>
         
         <div class="nav-item" id="admin-nav" onclick="window.showSection('admin', this)" style="display: none;">
-            <span>🛡️</span> Admin Panel
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            Admin Panel
         </div>
         
         
