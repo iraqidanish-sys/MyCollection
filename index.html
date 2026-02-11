@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Tech & Games Collection</title>
+    
+    <!-- DOMPurify for XSS Protection -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -667,6 +671,9 @@
     <div class="nav-item" onclick="window.showSection('settings', this)">
         <span>⚙️</span> Settings
     </div>
+    <div class="nav-item" id="admin-nav" onclick="window.showSection('admin', this)" style="display: none;">
+    <span>🛡️</span> Admin Panel
+</div>
 </div>
 
     <div class="main-content">
@@ -925,7 +932,6 @@
                 </button>
                 <input type="file" id="digital-import" accept=".csv,.tsv,.txt" style="display: none;" onchange="window.importDigitalCSV(event)">
             </div>
-
             <div class="add-card">
                 <h2>➕ Add Digital Purchase</h2>
                 <form id="digital-form">
@@ -1091,6 +1097,25 @@
                     </div>
                 </div>
             </div>
+            <!-- Custom icons will appear here -->
+                    </div>  <!-- Closes #icons-grid -->
+                </div>      <!-- Closes #saved-icons-section -->
+            </div>          <!-- Closes the Custom Icons .add-card -->
+
+            <!-- ADD DANGER ZONE HERE -->
+            <div class="add-card" style="border-color: #ff0055;">
+                <h2 style="color: #ff0055;">⚠️ Danger Zone</h2>
+                <p style="color: #888; margin-bottom: 15px;">
+                    Permanently delete your account and all data. This action cannot be undone.
+                </p>
+                <button class="btn" onclick="requestAccountDeletion()" 
+                        style="background: linear-gradient(45deg, #ff0055, #ff5500);">
+                    Delete My Account
+                </button>
+            </div>
+
+        </div>              <!-- Closes the #settings section -->
+    </div>                  <!-- Closes #mainApp -->
         </div>
     </div>
 
@@ -1180,11 +1205,21 @@
   doc,
   query,
   orderBy,
-  getDoc,
   setDoc,
-  updateDoc
+  getDoc,
+  updateDoc,
+  where,      // ← ADD THIS for user search
+  limit,      // ← ADD THIS for pagination
+  writeBatch  // ← ADD THIS for batch deletion
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { 
+    getAuth, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    onAuthStateChanged, 
+    signOut,
+    deleteUser  // ← ADD THIS for account deletion
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
         console.log('✅ Imports successful');
 
@@ -1209,6 +1244,65 @@
         // Global user state
         let currentUser = null;
         let currentUserUID = null;
+
+        // ========== ADMIN CONFIGURATION ==========
+const ADMIN_EMAILS = [
+    'iraqidanish@gmail.com',  // ← REPLACE WITH YOUR ACTUAL EMAIL
+];
+
+function isAdmin(user) {
+    return user && ADMIN_EMAILS.includes(user.email);
+}
+
+// ========== INPUT SANITIZATION ==========
+
+// Sanitize HTML content (for rich text fields like notes)
+function sanitizeHTML(dirty) {
+    if (!dirty) return '';
+    return DOMPurify.sanitize(dirty, {
+        ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a'],
+        ALLOWED_ATTR: ['href'],
+        ALLOW_DATA_ATTR: false
+    });
+}
+
+// Sanitize plain text (for titles, names, categories)
+function sanitizeText(text) {
+    if (!text) return '';
+    const temp = document.createElement('div');
+    temp.textContent = text;
+    return temp.innerHTML.replace(/<[^>]*>/g, '');
+}
+
+// Sanitize URLs (for icon URLs and links)
+function sanitizeURL(url) {
+    if (!url) return '';
+    const trimmed = url.trim();
+    if (!trimmed.match(/^https?:\/\//i)) {
+        return '';
+    }
+    try {
+        const parsed = new URL(trimmed);
+        const allowedDomains = [
+            'imgur.com', 'i.imgur.com',
+            'cloudinary.com',
+            'firebasestorage.googleapis.com',
+            'cdn.jsdelivr.net'
+        ];
+        const isAllowed = allowedDomains.some(domain => 
+            parsed.hostname === domain || parsed.hostname.endsWith('.' + domain)
+        );
+        return isAllowed ? parsed.href : '';
+    } catch {
+        return '';
+    }
+}
+
+// Sanitize numeric inputs
+function sanitizeNumber(value, defaultValue = 0) {
+    const num = parseFloat(value);
+    return isNaN(num) || !isFinite(num) ? defaultValue : num;
+}
 
         console.log('✅ Firebase initialized');
         // ⭐⭐⭐ INSERT initializeUser() RIGHT HERE ⭐⭐⭐
@@ -1261,8 +1355,8 @@
         var digitalTypes = [];
         var customIcons = []; // New: Store custom platform icons
 
-        // Authentication State Management
-       onAuthStateChanged(auth, async (user) => {
+       // Authentication State Management
+onAuthStateChanged(auth, async (user) => {
 
     document.getElementById('loadingScreen').style.display = 'none';
 
@@ -1270,6 +1364,16 @@
 
         currentUser = user;
         currentUserUID = user.uid;
+
+        console.log('✅ User authenticated:', user.email);
+
+        // Show admin panel if user is admin
+        if (isAdmin(user)) {
+            document.getElementById('admin-nav').style.display = 'flex';
+            console.log('👑 Admin access granted');
+        } else {
+            document.getElementById('admin-nav').style.display = 'none';
+        }
 
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
@@ -1279,37 +1383,73 @@
         document.getElementById('userEmail').textContent = user.email;
         document.getElementById('userPhoto').src = user.photoURL;
 
-        // ⭐ THIS IS THE ONLY NEW LINE
+        // Initialize user data
         await initializeUser(user);
 
     } else {
-
-        // ✅ KEEP THIS EXACTLY SAME
+        // User not logged in
         currentUser = null;
         currentUserUID = null;
 
+        console.log('⛔ User not authenticated');
+
+        // Hide admin panel
+        const adminNav = document.getElementById('admin-nav');
+        if (adminNav) adminNav.style.display = 'none';
+
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('mainApp').style.display = 'none';
-        document.getElementById('userInfo').style.display = 'none';
-
     }
-
 });
 
-        // Google Sign In
-        document.getElementById('googleSignInBtn').addEventListener('click', async () => {
-            try {
-                document.getElementById('loginError').style.display = 'none';
-                const result = await signInWithPopup(auth, provider);
-                // User signed in successfully
-                console.log('Signed in as:', result.user.email);
-            } catch (error) {
-                console.error('Sign in error:', error);
+        // Google Sign In (Enhanced with User Profile Creation)
+document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+    try {
+        document.getElementById('loginError').style.display = 'none';
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        
+        console.log('Signed in as:', user.email);
+
+        // Create or update user profile
+        const userProfileRef = doc(db, 'userProfiles', user.uid);
+        const userProfileSnap = await getDoc(userProfileRef);
+
+        if (!userProfileSnap.exists()) {
+            // New user - create profile
+            await setDoc(userProfileRef, {
+                email: user.email,
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+                createdAt: new Date().toISOString(),
+                blocked: false
+            });
+            console.log('✅ User profile created');
+        } else {
+            // Existing user - check if blocked
+            const userData = userProfileSnap.data();
+            if (userData.blocked) {
+                await signOut(auth);
                 const errorDiv = document.getElementById('loginError');
-                errorDiv.textContent = `Sign in failed: ${error.message}`;
+                errorDiv.textContent = 'Your account has been blocked. Please contact support.';
                 errorDiv.style.display = 'block';
+                return;
             }
-        });
+
+            // Update last login
+            await updateDoc(userProfileRef, {
+                lastLogin: new Date().toISOString()
+            });
+            console.log('✅ Last login updated');
+        }
+
+    } catch (error) {
+        console.error('Sign in error:', error);
+        const errorDiv = document.getElementById('loginError');
+        errorDiv.textContent = `Sign in failed: ${error.message}`;
+        errorDiv.style.display = 'block';
+    }
+});
 
         // Sign Out
         document.getElementById('signOutBtn').addEventListener('click', async () => {
@@ -2053,50 +2193,50 @@ async function loadSettings() {
     }
 };
 
-        // Gadget form handler
-        document.getElementById('gadget-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const sellPrice = document.getElementById('g-sell-price').value;
-            const sellDate = document.getElementById('g-sell-date').value;
+      // Gadget form handler (with sanitization)
+document.getElementById('gadget-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const sellPrice = document.getElementById('g-sell-price').value;
+    const sellDate = document.getElementById('g-sell-date').value;
 
-            const gadget = {
-                name: document.getElementById('g-name').value,
-                category: document.getElementById('g-category').value,
-                price: parseFloat(document.getElementById('g-price').value),
-                date: document.getElementById('g-date').value,
-                sellPrice: sellPrice ? parseFloat(sellPrice) : null,
-                sellDate: sellDate || null,
-                notes: document.getElementById('g-notes').value,
-                status: (sellPrice && sellDate) ? 'sold' : 'owned',
-                timestamp: Date.now()
-            };
+    const gadget = {
+        name: sanitizeText(document.getElementById('g-name').value),           // ← SANITIZED
+        category: sanitizeText(document.getElementById('g-category').value),   // ← SANITIZED
+        price: sanitizeNumber(parseFloat(document.getElementById('g-price').value)), // ← SANITIZED
+        date: document.getElementById('g-date').value,
+        sellPrice: sellPrice ? sanitizeNumber(parseFloat(sellPrice)) : null,  // ← SANITIZED
+        sellDate: sellDate || null,
+        notes: sanitizeHTML(document.getElementById('g-notes').value),        // ← SANITIZED
+        status: (sellPrice && sellDate) ? 'sold' : 'owned',
+        timestamp: Date.now()
+    };
 
-            try {
-                if (window.editingGadgetId) {
-                    // UPDATE existing gadget
-                    await updateDoc(
-                        doc(db, 'users', currentUserUID, 'gadgets', window.editingGadgetId),
-                        gadget
-                    );
-                    window.editingGadgetId = null;
-                    document.querySelector('#gadget-form .btn').textContent = 'Add to Collection';
-                } else {
-                    // ADD new gadget
-                    await addDoc(
-                        collection(db, 'users', currentUserUID, 'gadgets'),
-                        gadget
-                    );
-                }
+    try {
+        if (window.editingGadgetId) {
+            // UPDATE existing gadget
+            await updateDoc(
+                doc(db, 'users', currentUserUID, 'gadgets', window.editingGadgetId),
+                gadget
+            );
+            window.editingGadgetId = null;
+            document.querySelector('#gadget-form .btn').textContent = 'Add to Collection';
+        } else {
+            // ADD new gadget
+            await addDoc(
+                collection(db, 'users', currentUserUID, 'gadgets'),
+                gadget
+            );
+        }
 
-                await loadData();
-                e.target.reset();
-                document.getElementById('g-date').valueAsDate = new Date();
-            } catch (error) {
-                console.error('Error adding gadget:', error);
-                alert('Error adding gadget. Please try again.');
-            }
-        });
+        await loadData();
+        e.target.reset();
+        document.getElementById('g-date').valueAsDate = new Date();
+    } catch (error) {
+        console.error('Error adding gadget:', error);
+        alert('Error adding gadget. Please try again.');
+    }
+});
 
         // Gadget filter
         window.filterGadgets = function(event, filter) {
@@ -2129,85 +2269,44 @@ async function loadSettings() {
 
         // Render gadgets
         function renderGadgets() {
-            const container = document.getElementById('gadgets-list');
-            let filtered = gadgets;
+    const container = document.getElementById('gadgets-list');
+    
+    if (gadgets.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#888;">No gadgets yet.</p>';
+        return;
+    }
 
-            if (currentGadgetFilter === 'owned') filtered = gadgets.filter(g => g.status === 'owned');
-            if (currentGadgetFilter === 'sold') filtered = gadgets.filter(g => g.status === 'sold');
-            
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📱</div>
-                        <p>No gadgets in this category yet!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = filtered.map(g => {
-                const profit = g.sellPrice ? g.sellPrice - g.price : 0;
-                const profitClass = profit > 0 ? 'profit-positive' : profit < 0 ? 'profit-negative' : '';
-                const duration = calculateOwnershipDuration(g.date, g.sellDate);
-                
-                return `
-                <div class="item-card">
-                    <div class="item-header">
-                        <div>
-                            <div class="item-title">${g.name}</div>
-                            <span class="item-category">${g.category}</span>
-                            ${g.status === 'sold' ? '<span class="status-sold" style="margin-left: 5px;">SOLD</span>' : '<span class="status-owned" style="margin-left: 5px;">OWNED</span>'}
-                        </div>
-                        <div style="display: flex; gap: 8px;">
-                            <button class="edit-icon" onclick="window.editGadget('${g.firestoreId}')" title="Edit">✏️</button>
-                            <button class="delete-icon" onclick="window.deleteGadget('${g.firestoreId}', '${g.name}')">×</button>
-                        </div>
-                    </div>
-                    <div class="item-info">
-                        <div class="info-row">
-                            <span class="info-label">Buy Price</span>
-                            <span class="info-value">₹${g.price.toFixed(2)}</span>
-                        </div>
-                        ${g.sellPrice ? `
-                        <div class="info-row">
-                            <span class="info-label">Sell Price</span>
-                            <span class="info-value">₹${g.sellPrice.toFixed(2)}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Profit/Loss</span>
-                            <span class="info-value ${profitClass}">₹${profit.toFixed(2)}</span>
-                        </div>
-                        ` : ''}
-                        <div class="info-row">
-                            <span class="info-label">Purchased</span>
-                            <span class="info-value">${new Date(g.date).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
-                        </div>
-                        ${g.sellDate ? `
-                        <div class="info-row">
-                            <span class="info-label">Sold</span>
-                            <span class="info-value">${new Date(g.sellDate).toLocaleDateString('en-IN', {day: 'numeric', month: 'short', year: 'numeric'})}</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Held For</span>
-                            <span class="info-value" style="color: #00f5ff; font-weight: 600;">⏱️ ${duration}</span>
-                        </div>
-                        ` : `
-                        <div class="info-row">
-                            <span class="info-label">Owned For</span>
-                            <span class="info-value" style="color: #00f5ff; font-weight: 600;">⏱️ ${duration}</span>
-                        </div>
-                        `}
-                        ${g.notes ? `
-                        <div class="info-row">
-                            <span class="info-label">Notes</span>
-                            <span class="info-value">${g.notes}</span>
-                        </div>
-                        ` : ''}
-                    </div>
+    container.innerHTML = gadgets.map(g => `
+        <div class="item-card">
+            <div class="item-header">
+                <div>
+                    ${g.icon ? `<img src="${sanitizeURL(g.icon)}" alt="Icon" style="width:40px;height:40px;border-radius:8px;margin-bottom:8px;">` : ''}
+                    <div class="item-title">${sanitizeText(g.name)}</div>
+                    <span class="item-category">${sanitizeText(g.category)}</span>
                 </div>
-            `;
-            }).join('');
-        }
+            </div>
+            <div class="item-info">
+                <div class="item-info-row">
+                    <span class="item-info-label">Price:</span>
+                    <span class="item-info-value">${currentCurrency}${sanitizeNumber(g.price).toLocaleString()}</span>
+                </div>
+                <div class="item-info-row">
+                    <span class="item-info-label">Date:</span>
+                    <span class="item-info-value">${g.date || 'N/A'}</span>
+                </div>
+                <div class="item-info-row">
+                    <span class="item-info-label">Condition:</span>
+                    <span class="item-info-value">${sanitizeText(g.condition)}</span>
+                </div>
+            </div>
+            ${g.notes ? `<div class="item-notes">${sanitizeHTML(g.notes)}</div>` : ''}
+            <div class="item-actions">
+                <button class="btn-edit" onclick="editGadget('${g.id}')">Edit</button>
+                <button class="btn-delete" onclick="deleteGadget('${g.id}')">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
 
         // Delete gadget with confirmation
         window.deleteGadget = function(firestoreId, name) {
@@ -3242,27 +3341,215 @@ window.importDigitalCSV = async function (event) {
 
     reader.readAsText(file, 'UTF-8');
 };
+        // ========== ADMIN FUNCTIONS ==========
 
-        // Initialize
-        document.getElementById('g-date').valueAsDate = new Date();
-        document.getElementById('gm-buy-date').valueAsDate = new Date();
-        document.getElementById('d-date').valueAsDate = new Date();
-        
-        // Initialize icon upload handlers
-        setTimeout(() => {
-            const fileInput = document.getElementById('icon-upload');
-            const urlInput = document.getElementById('icon-url');
-            
-            if (fileInput) {
-                fileInput.addEventListener('change', handleIconUpload);
+        let currentSearchedUID = null;
+
+        // Search for user by email
+        window.searchUser = async function() {
+            const email = sanitizeText(document.getElementById('admin-search-email').value);
+            if (!email) {
+                alert('Please enter an email');
+                return;
             }
-            
-            if (urlInput) {
-                urlInput.addEventListener('input', handleIconURL);
+
+            try {
+                const usersRef = collection(db, 'userProfiles');
+                const q = query(usersRef, where('email', '==', email), limit(1));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    alert('User not found');
+                    return;
+                }
+
+                const userDoc = snapshot.docs[0];
+                const userData = userDoc.data();
+                currentSearchedUID = userDoc.id;
+
+                document.getElementById('admin-user-details').style.display = 'block';
+                document.getElementById('admin-user-info').innerHTML = `
+                    <div style="background: #16213e; padding: 15px; border-radius: 8px;">
+                        <p><strong>Email:</strong> ${userData.email}</p>
+                        <p><strong>UID:</strong> ${currentSearchedUID}</p>
+                        <p><strong>Status:</strong> <span style="color: ${userData.blocked ? '#ff0055' : '#00ff88'}">${userData.blocked ? 'BLOCKED' : 'ACTIVE'}</span></p>
+                        <p><strong>Joined:</strong> ${new Date(userData.createdAt).toLocaleDateString()}</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Search error:', error);
+                alert('Failed to search user');
             }
-        }, 1000);
+        };
+
+        // Block a user
+        window.blockUser = async function() {
+            if (!currentSearchedUID) return;
+
+            if (!confirm('Are you sure you want to block this user?')) return;
+
+            try {
+                await updateDoc(doc(db, 'userProfiles', currentSearchedUID), {
+                    blocked: true,
+                    blockedAt: new Date().toISOString()
+                });
+
+                alert('User blocked successfully');
+                await searchUser();
+
+            } catch (error) {
+                console.error('Block error:', error);
+                alert('Failed to block user');
+            }
+        };
+
+        // Unblock a user
+        window.unblockUser = async function() {
+            if (!currentSearchedUID) return;
+
+            try {
+                await updateDoc(doc(db, 'userProfiles', currentSearchedUID), {
+                    blocked: false,
+                    unblockedAt: new Date().toISOString()
+                });
+
+                alert('User unblocked successfully');
+                await searchUser();
+
+            } catch (error) {
+                console.error('Unblock error:', error);
+                alert('Failed to unblock user');
+            }
+        };
+
+        // Load all users
+        window.loadAllUsers = async function() {
+            try {
+                const usersRef = collection(db, 'userProfiles');
+                const q = query(usersRef, orderBy('createdAt', 'desc'), limit(50));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    document.getElementById('admin-users-list').innerHTML = '<p>No users found</p>';
+                    return;
+                }
+
+                const usersList = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return `
+                        <div style="background: #16213e; padding: 12px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${data.email}</strong>
+                                <span style="color: ${data.blocked ? '#ff0055' : '#00ff88'}; margin-left: 10px;">
+                                    ${data.blocked ? '🚫 BLOCKED' : '✅ ACTIVE'}
+                                </span>
+                            </div>
+                            <div>
+                                <small style="color: #888;">${new Date(data.createdAt).toLocaleDateString()}</small>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.getElementById('admin-users-list').innerHTML = usersList;
+
+            } catch (error) {
+                console.error('Load users error:', error);
+                alert('Failed to load users');
+            }
+        };
+
+        // ========== ACCOUNT DELETION ==========
+
+        window.requestAccountDeletion = async function() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Please log in first');
+                return;
+            }
+
+            const confirm1 = confirm(
+                '⚠️ WARNING: This will permanently delete your account and ALL data.\n\n' +
+                'Are you absolutely sure?'
+            );
+            if (!confirm1) return;
+
+            const confirm2 = prompt(
+                'Type "DELETE" (in capitals) to confirm account deletion:'
+            );
+            if (confirm2 !== 'DELETE') {
+                alert('Account deletion cancelled');
+                return;
+            }
+
+            try {
+                alert('Processing deletion... Please wait.');
+
+                // Delete user data
+                await deleteUserData(user.uid);
+                
+                // Delete user profile
+                await deleteDoc(doc(db, 'userProfiles', user.uid));
+                
+                // Delete auth account
+                await deleteUser(user);
+
+                alert('Account deleted successfully. You will be signed out.');
+                window.location.reload();
+
+            } catch (error) {
+                console.error('Deletion error:', error);
+
+                if (error.code === 'auth/requires-recent-login') {
+                    alert(
+                        'For security, you must sign in again before deleting your account.\n\n' +
+                        'Please sign out, sign back in, and try again.'
+                    );
+                } else {
+                    alert('Failed to delete account: ' + error.message);
+                }
+            }
+        };
+
+        async function deleteUserData(uid) {
+            const collections = ['gadgets', 'games', 'digitalPurchases'];
+
+            for (const collectionName of collections) {
+                const collectionRef = collection(db, 'users', uid, collectionName);
+                const snapshot = await getDocs(collectionRef);
+
+                const batch = writeBatch(db);
+                snapshot.docs.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+
+                await batch.commit();
+            }
+
+            console.log('✅ User data deleted');
+    }
+
+    // Initialize
+    document.getElementById('g-date').valueAsDate = new Date();
+    document.getElementById('gm-buy-date').valueAsDate = new Date();
+    document.getElementById('d-date').valueAsDate = new Date();
+    
+    // Initialize icon upload handlers
+    setTimeout(() => {
+        const fileInput = document.getElementById('icon-upload');
+        const urlInput = document.getElementById('icon-url');
         
-        // Data will be loaded automatically after authentication via onAuthStateChanged
-    </script>
+        if (fileInput) {
+            fileInput.addEventListener('change', handleIconUpload);
+        }
+        
+        if (urlInput) {
+            urlInput.addEventListener('input', handleIconURL);
+        }
+    }, 1000);
+    
+    // Data will be loaded automatically after authentication via onAuthStateChanged
+</script>
 </body>
 </html>
