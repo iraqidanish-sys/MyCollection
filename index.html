@@ -789,11 +789,11 @@
                 <path d="M2 17l10 5 10-5"></path>
                 <path d="M2 12l10 5 10-5"></path>
             </svg>
-            MyCollection
+            NexaVault
         </div>
         
         <div class="nav-item active" onclick="window.showSection('dashboard', this)">
-            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.3));">
                 <rect x="3" y="3" width="7" height="7"></rect>
                 <rect x="14" y="3" width="7" height="7"></rect>
                 <rect x="14" y="14" width="7" height="7"></rect>
@@ -803,7 +803,7 @@
         </div>
         
         <div class="nav-item" onclick="window.showSection('gadgets', this)">
-            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(13, 202, 240, 0.3));">
                 <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
                 <line x1="12" y1="18" x2="12.01" y2="18"></line>
             </svg>
@@ -811,7 +811,7 @@
         </div>
         
         <div class="nav-item" onclick="window.showSection('games', this)">
-            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(236, 72, 153, 0.3));">
                 <line x1="6" y1="11" x2="10" y2="11"></line>
                 <line x1="8" y1="9" x2="8" y2="13"></line>
                 <line x1="15" y1="12" x2="15.01" y2="12"></line>
@@ -822,7 +822,7 @@
         </div>
         
         <div class="nav-item" onclick="window.showSection('digital', this)">
-            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(139, 92, 246, 0.3));">
                 <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                 <line x1="1" y1="10" x2="23" y2="10"></line>
             </svg>
@@ -830,18 +830,18 @@
         </div>
         
         <div class="nav-item" onclick="window.showSection('settings', this)">
-            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(100, 116, 139, 0.3));">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M12 1v6m0 6v6m-5.2-3.8l4.2-4.2m2.8 2.8l4.2-4.2M1 12h6m6 0h6m-3.8 5.2l-4.2-4.2m-2.8 2.8l-4.2 4.2"></path>
             </svg>
             Settings
         </div>
         
-        <div class="nav-item" id="admin-nav" onclick="window.showSection('admin', this)" style="display: none;">
-            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="nav-item" id="admin-nav" onclick="window.showSection('admin', this)" style="display: none; background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%); border-left: 3px solid #ef4444;">
+            <svg class="nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.4));">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
-            Admin Panel
+            <span style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">Admin Panel</span>
         </div>
         
         
@@ -1492,33 +1492,82 @@
             
             <!-- Category Tags -->
             <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: transparent; border: 1px solid rgba(13, 202, 240, 0.5); border-radius: 6px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0dcaf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
-                    </svg>
+                <div class="category-badge" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: transparent; border: 1px solid rgba(13, 202, 240, 0.5); border-radius: 6px; position: relative; overflow: visible;">
+                    <div style="position: relative; width: 24px; height: 24px;">
+                        <svg class="floating-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0dcaf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: float1 3s ease-in-out infinite; filter: drop-shadow(0 2px 4px rgba(13, 202, 240, 0.4));">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </div>
                     <span style="color: #adb5bd; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Hardware</span>
                 </div>
                 
-                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: transparent; border: 1px solid rgba(236, 72, 153, 0.5); border-radius: 6px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="6" y1="11" x2="10" y2="11"></line>
-                        <line x1="8" y1="9" x2="8" y2="13"></line>
-                        <line x1="15" y1="12" x2="15.01" y2="12"></line>
-                        <line x1="18" y1="10" x2="18.01" y2="10"></line>
-                        <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path>
-                    </svg>
+                <div class="category-badge" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: transparent; border: 1px solid rgba(236, 72, 153, 0.5); border-radius: 6px; position: relative; overflow: visible;">
+                    <div style="position: relative; width: 24px; height: 24px;">
+                        <svg class="floating-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: float2 3s ease-in-out infinite; animation-delay: 0.3s; filter: drop-shadow(0 2px 4px rgba(236, 72, 153, 0.4));">
+                            <line x1="6" y1="11" x2="10" y2="11"></line>
+                            <line x1="8" y1="9" x2="8" y2="13"></line>
+                            <line x1="15" y1="12" x2="15.01" y2="12"></line>
+                            <line x1="18" y1="10" x2="18.01" y2="10"></line>
+                            <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path>
+                        </svg>
+                    </div>
                     <span style="color: #adb5bd; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Gaming</span>
                 </div>
                 
-                <div style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: transparent; border: 1px solid rgba(16, 185, 129, 0.5); border-radius: 6px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                        <line x1="1" y1="10" x2="23" y2="10"></line>
-                    </svg>
+                <div class="category-badge" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: transparent; border: 1px solid rgba(16, 185, 129, 0.5); border-radius: 6px; position: relative; overflow: visible;">
+                    <div style="position: relative; width: 24px; height: 24px;">
+                        <svg class="floating-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); animation: float3 3s ease-in-out infinite; animation-delay: 0.6s; filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.4));">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                            <line x1="1" y1="10" x2="23" y2="10"></line>
+                        </svg>
+                    </div>
                     <span style="color: #adb5bd; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Digital</span>
                 </div>
             </div>
+            
+            <style>
+                @keyframes float1 {
+                    0%, 100% {
+                        transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+                    }
+                    50% {
+                        transform: translate(-50%, -50%) translateY(-4px) rotate(5deg);
+                    }
+                }
+                
+                @keyframes float2 {
+                    0%, 100% {
+                        transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+                    }
+                    50% {
+                        transform: translate(-50%, -50%) translateY(-5px) rotate(-5deg);
+                    }
+                }
+                
+                @keyframes float3 {
+                    0%, 100% {
+                        transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+                    }
+                    50% {
+                        transform: translate(-50%, -50%) translateY(-4px) rotate(3deg);
+                    }
+                }
+                
+                .category-badge {
+                    transition: all 0.3s ease;
+                }
+                
+                .category-badge:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(13, 202, 240, 0.3);
+                }
+                
+                .category-badge:hover .floating-icon {
+                    animation-play-state: paused;
+                    transform: translate(-50%, -50%) scale(1.2);
+                }
+            </style>
         </div>
         
         <!-- Right Side - Auth -->
