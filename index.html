@@ -1712,7 +1712,7 @@ onAuthStateChanged(auth, async (user) => {
 
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('userInfo').style.display = 'block';
 
             // Set user name and email
             const displayName = user.displayName || user.email.split('@')[0];
