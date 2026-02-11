@@ -1307,16 +1307,14 @@ function sanitizeNumber(value, defaultValue = 0) {
 
         console.log('✅ Firebase initialized');
         // ⭐⭐⭐ INSERT initializeUser() RIGHT HERE ⭐⭐⭐
-        async function initializeUser(user) {
-        try {
+async function initializeUser(user) {
+    try {
         currentUserUID = user.uid;
-
         const profileRef = collection(db, "users", user.uid, "profile");
         const profileSnapshot = await getDocs(profileRef);
-
+        
         if (profileSnapshot.empty) {
             console.log("🆕 Creating user profile");
-
             await addDoc(collection(db, "users", user.uid, "profile"), {
                 email: user.email,
                 displayName: user.displayName || "User",
@@ -1324,16 +1322,24 @@ function sanitizeNumber(value, defaultValue = 0) {
                 role: "user",
                 status: "active"
             });
-
             await addDoc(collection(db, "users", user.uid, "settings"), {
-                currency: "INR",
+                currency: "₹",  // ← Changed from "INR" to "₹"
                 theme: "dark",
                 locale: "en-IN",
                 dateFormat: "DD/MM/YYYY",
                 notifications: true
             });
         }
-
+        
+        // ✅ LOAD USER'S CURRENCY SETTING
+        const settingsRef = collection(db, "users", user.uid, "settings");
+        const settingsSnapshot = await getDocs(settingsRef);
+        if (!settingsSnapshot.empty) {
+            const userSettings = settingsSnapshot.docs[0].data();
+            currentCurrency = userSettings.currency || '₹';
+            console.log('✅ Currency loaded:', currentCurrency);
+        }
+        
         await loadSettings();
         await loadData();
     } catch (err) {
