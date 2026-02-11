@@ -703,17 +703,17 @@
         
         <!-- ✅ ADD #userInfo HERE - BEFORE sidebar closes -->
         <div id="userInfo" style="display: none; margin-top: auto; padding: 15px; background: #16213e; border-radius: 10px; border: 1px solid #2a2a3e;">
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-                <img id="userPhoto" src="" alt="" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #00f5ff;">
-                <div style="flex: 1; min-width: 0;">
-                    <div id="userName" style="font-size: 13px; font-weight: 600; color: #e0e0e0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                    <div id="userEmail" style="font-size: 11px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                </div>
-            </div>
-            <button id="signOutBtn" style="width: 100%; background: linear-gradient(45deg, #f44336, #d32f2f); border: none; padding: 10px; border-radius: 6px; color: white; font-size: 12px; font-weight: 600; cursor: pointer;">
-                Sign Out
-            </button>
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">  <!-- ← Changed to 15px -->
+        <img id="userPhoto" src="" alt="" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #00f5ff;">
+        <div style="flex: 1; min-width: 0; overflow: hidden;">  <!-- ← Added overflow: hidden -->
+            <div id="userName" style="font-size: 13px; font-weight: 600; color: #e0e0e0; margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>
+            <div id="userEmail" style="font-size: 10px; color: #888; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></div>  <!-- ← Reduced to 10px -->
         </div>
+    </div>
+    <button id="signOutBtn" style="width: 100%; background: linear-gradient(45deg, #f44336, #d32f2f); border: none; padding: 8px; border-radius: 6px; color: white; font-size: 12px; font-weight: 600; cursor: pointer;">
+        Sign Out
+    </button>
+</div>
     </div> <!-- sidebar closes here -->
     
     <div class="main-content">
@@ -1150,6 +1150,47 @@
         </div>
 
         </div>              <!-- Closes the #settings section -->
+                </div>              <!-- Closes the #settings section -->
+
+        <!-- Admin Section -->
+        <div id="admin" class="section">
+            <div class="header">
+                <h1>🛡️ Admin Panel</h1>
+                <p>Manage users and app health</p>
+            </div>
+
+            <div class="add-card">
+                <h2>User Management</h2>
+                
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <label>Search User by Email</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="email" id="admin-search-email" placeholder="user@example.com" style="flex: 1;">
+                        <button class="btn" onclick="searchUser()">Search</button>
+                    </div>
+                </div>
+
+                <div id="admin-user-details" style="display: none; margin-top: 20px;">
+                    <h3 style="color: #00f5ff; margin-bottom: 15px;">User Details</h3>
+                    <div id="admin-user-info"></div>
+                    
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn" onclick="blockUser()" style="background: linear-gradient(45deg, #ff0055, #ff5500);">
+                            Block User
+                        </button>
+                        <button class="btn" onclick="unblockUser()">
+                            Unblock User
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="add-card">
+                <h2>All Users</h2>
+                <button class="btn" onclick="loadAllUsers()" style="margin-bottom: 15px;">Load Users List</button>
+                <div id="admin-users-list"></div>
+            </div>
+        </div>
     </div>                  <!-- Closes #mainApp -->
 
     <!-- Delete Confirmation Modal -->
