@@ -172,6 +172,30 @@
                 transform: translate(-50%, -50%) translateY(-3px) rotate(2deg);
             }
         }
+        
+        @keyframes floatCategoryIcon {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translate(-50%, -50%) translateY(-3px) rotate(3deg);
+            }
+        }
+        
+        .floating-category-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .floating-category-icon:hover {
+            animation-play-state: paused !important;
+            transform: translate(-50%, -50%) scale(1.2) !important;
+        }
+        
+        .floating-category-icon svg {
+            width: 20px;
+            height: 20px;
+            display: block;
+        }
 
         .main-content {
             margin-left: 260px;
@@ -2592,20 +2616,90 @@ async function loadData() {
 }
 
         // Default values
+        // SVG Icon Library
+        const iconLibrary = {
+            // Gadget Categories
+            'Phone': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>',
+            'Laptop': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="17" x2="22" y2="17"></line></svg>',
+            'Smartwatch': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="7"></circle><polyline points="12 9 12 12 13.5 13.5"></polyline><path d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"></path></svg>',
+            'Audio': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>',
+            'Camera': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>',
+            'Gaming': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"></line><line x1="8" y1="9" x2="8" y2="13"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="10" x2="18.01" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path></svg>',
+            'Accessories': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+            'Storage': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>',
+            'Monitor': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>',
+            'Keyboard/Mouse': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"></path></svg>',
+            'Chargers': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>',
+            'Other': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v6m0 6v6m5-13l-6 6m6 6l-6-6m10-2h-6m-6 0H1m18 5l-6-6m-6 6l-6-6"></path></svg>',
+            
+            // Game Platforms
+            'PlayStation 5': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"></rect><circle cx="12" cy="18" r="1"></circle></svg>',
+            'PlayStation 4': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"></rect><circle cx="12" cy="18" r="1"></circle></svg>',
+            'PlayStation 3': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"></rect><circle cx="12" cy="18" r="1"></circle></svg>',
+            'Xbox Series X/S': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11.5a6.5 6.5 0 1 1 13 0 11 11 0 0 1-11 11 11 11 0 0 1-11-11 6.5 6.5 0 0 1 6.5-6.5H9"></path><circle cx="12" cy="12" r="1"></circle></svg>',
+            'Xbox One': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11.5a6.5 6.5 0 1 1 13 0 11 11 0 0 1-11 11 11 11 0 0 1-11-11 6.5 6.5 0 0 1 6.5-6.5H9"></path><circle cx="12" cy="12" r="1"></circle></svg>',
+            'Xbox 360': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>',
+            'Nintendo Switch': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="3"></rect><circle cx="8" cy="8" r="2"></circle><circle cx="16" cy="16" r="2"></circle></svg>',
+            'Nintendo Wii U': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"></rect><circle cx="12" cy="18" r="1"></circle></svg>',
+            'Nintendo Wii': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"></rect><circle cx="12" cy="18" r="1"></circle></svg>',
+            'PC': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>',
+            'Mobile': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>',
+            'Retro': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>',
+            
+            // Game Genres
+            'Action': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+            'Adventure': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>',
+            'RPG': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>',
+            'Sports': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>',
+            'Racing': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11h14M5 13h14M5 15h14M5 17h14M5 19h14M5 9l3-6M19 9l-3-6"></path></svg>',
+            'Puzzle': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-1.705.707 2.402 2.402 0 0 1-1.704-.706l-1.568-1.568a1.026 1.026 0 0 0-.877-.29c-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02a1.026 1.026 0 0 0-.289-.877l-1.568-1.568A2.402 2.402 0 0 1 1.998 12c0-.617.236-1.234.706-1.704L4.23 8.77c.24-.24.581-.353.917-.303.515.077.877.528 1.073 1.01a2.5 2.5 0 1 0 3.259-3.259c-.482-.196-.933-.558-1.01-1.073-.05-.336.062-.676.303-.917l1.525-1.525A2.402 2.402 0 0 1 12 1.998c.617 0 1.234.236 1.704.706l1.568 1.568c.23.23.556.338.877.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02z"></path></svg>',
+            'Strategy': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>',
+            'Horror': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10h.01M15 10h.01M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path><circle cx="7" cy="14" r="1"></circle><circle cx="12" cy="16" r="1"></circle><circle cx="17" cy="14" r="1"></circle></svg>',
+            'Simulation': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>',
+            'Shooter': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>',
+            'Fighting': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>',
+            'Music': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>',
+            'Platform': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>',
+            
+            // Digital Purchase Types
+            'Game Subscription': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"></line><line x1="8" y1="9" x2="8" y2="13"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="10" x2="18.01" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"></path></svg>',
+            'Streaming Service': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>',
+            'Cloud Storage': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path></svg>',
+            'Music Subscription': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>',
+            'E-Book/Audiobook': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>',
+            'Productivity Tool': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>',
+            'Online Course': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>',
+            'Steam': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>',
+        };
+
+        // Helper function to create animated SVG icon
+        function createSVGIcon(categoryName, animationDelay = 0) {
+            const iconKey = categoryName.replace(/^[📱💻⌚🎧📷🎮⚡💾🖥️⌨️🔌🔧🟦🟩🔴🔵⚪🕹️🎯🏃🏆🏎️🧩🎲👻🎭🔫⚔️🎸🏰💳📺☁️🎵📚💼🎓]\s+/, '');
+            const svgMarkup = iconLibrary[iconKey] || iconLibrary['Other'];
+            
+            return `
+                <div style="position: relative; width: 20px; height: 20px; flex-shrink: 0;">
+                    <div class="floating-category-icon" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #10b981; animation: floatCategoryIcon 3s ease-in-out infinite; animation-delay: ${animationDelay}s; filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));">
+                        ${svgMarkup}
+                    </div>
+                </div>
+            `;
+        }
+
         function getDefaultGadgetCategories() {
-            return ['📱 Phone', '💻 Laptop', '⌚ Smartwatch', '🎧 Audio', '📷 Camera', '🎮 Gaming', '⚡ Accessories', '💾 Storage', '🖥️ Monitor', '⌨️ Keyboard/Mouse', '🔌 Chargers', '🔧 Other'];
+            return ['Phone', 'Laptop', 'Smartwatch', 'Audio', 'Camera', 'Gaming', 'Accessories', 'Storage', 'Monitor', 'Keyboard/Mouse', 'Chargers', 'Other'];
         }
 
         function getDefaultGamePlatforms() {
-            return ['🟦 PlayStation 5', '🟦 PlayStation 4', '🟦 PlayStation 3', '🟩 Xbox Series X/S', '🟩 Xbox One', '🟩 Xbox 360', '🔴 Nintendo Switch', '🔵 Nintendo Wii U', '⚪ Nintendo Wii', '💻 PC', '📱 Mobile', '🕹️ Retro', '🎮 Other'];
+            return ['PlayStation 5', 'PlayStation 4', 'PlayStation 3', 'Xbox Series X/S', 'Xbox One', 'Xbox 360', 'Nintendo Switch', 'Nintendo Wii U', 'Nintendo Wii', 'PC', 'Mobile', 'Retro', 'Other'];
         }
 
         function getDefaultGameGenres() {
-            return ['🎯 Action', '🏃 Adventure', '🎮 RPG', '🏆 Sports', '🏎️ Racing', '🧩 Puzzle', '🎲 Strategy', '👻 Horror', '🎭 Simulation', '🔫 Shooter', '⚔️ Fighting', '🎸 Music', '🏰 Platform'];
+            return ['Action', 'Adventure', 'RPG', 'Sports', 'Racing', 'Puzzle', 'Strategy', 'Horror', 'Simulation', 'Shooter', 'Fighting', 'Music', 'Platform'];
         }
 
         function getDefaultDigitalTypes() {
-            return ['🎮 Game Subscription', '📺 Streaming Service', '☁️ Cloud Storage', '🎵 Music Subscription', '📚 E-Book/Audiobook', '💼 Productivity Tool', '🎓 Online Course', '💳 Other'];
+            return ['Game Subscription', 'Streaming Service', 'Cloud Storage', 'Music Subscription', 'E-Book/Audiobook', 'Productivity Tool', 'Online Course', 'Other'];
         }
 
        // Load GLOBAL Settings from Firestore
@@ -2945,29 +3039,31 @@ async function loadSettings() {
             const container = document.getElementById(containerId);
             if (!container) return;
             
-            container.innerHTML = items.map(item => {
+            container.innerHTML = items.map((item, index) => {
                 let displayContent = '';
                 
-                // Check if this is a game platform and has a custom icon
+                // Check if this is a game platform and has a custom uploaded icon
                 if (type === 'gamePlatform') {
                     const customIcon = getCustomIconForPlatform(item);
                     if (customIcon) {
-                        // Show custom icon + text without emoji
+                        // Show custom uploaded icon
                         const textWithoutEmoji = removeEmojiFromText(item);
                         displayContent = `<img src="${customIcon.iconUrl}" style="width: 28px; height: 28px; object-fit: contain; padding: 4px; border-radius: 6px; background: rgba(255, 255, 255, 0.95); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);"> <span style="font-size: 14px;">${textWithoutEmoji}</span>`;
                     } else {
-                        // Show with emoji as normal
-                        displayContent = `<span style="font-size: 14px;">${item}</span>`;
+                        // Use SVG icon
+                        const animationDelay = (index * 0.1) % 1;
+                        displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size: 14px; margin-left: 8px;">${item}</span>`;
                     }
                 } else {
-                    // Other types show normally
-                    displayContent = `<span style="font-size: 14px;">${item}</span>`;
+                    // Use SVG icon for all other types
+                    const animationDelay = (index * 0.1) % 1;
+                    displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size: 14px; margin-left: 8px;">${item}</span>`;
                 }
                 
                 return `
-                    <div style="background: #1a1a2e; padding: 10px 15px; border-radius: 8px; border: 1px solid #2a2a3e; display: flex; align-items: center; gap: 10px;">
+                    <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.2); display: flex; align-items: center; gap: 10px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(16, 185, 129, 0.2)'; this.style.borderColor='rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.2)'; this.style.borderColor='rgba(148, 163, 184, 0.2)'">
                         ${displayContent}
-                        <button onclick="window.remove${type.charAt(0).toUpperCase() + type.slice(1)}('${item.replace(/'/g, "\\'")}')" style="background: #f44336; border: none; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; margin-left: auto;">×</button>
+                        <button onclick="window.remove${type.charAt(0).toUpperCase() + type.slice(1)}('${item.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-left: auto; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 16px rgba(239, 68, 68, 0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(239, 68, 68, 0.3)'">×</button>
                     </div>
                 `;
             }).join('');
