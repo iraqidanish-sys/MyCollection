@@ -1760,15 +1760,15 @@
 </div> <!-- Closes #mainApp (ACTUALLY) -->
 
     <!-- Delete Confirmation Modal -->
-    <div class="modal" id="deleteModal">
+    <div class="modal" id="deleteModal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">⚠️ Confirm Delete</div>
             <div class="modal-body" id="deleteMessage">
                 Are you sure you want to delete this item? This action cannot be undone.
             </div>
             <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-                <button class="btn-delete" onclick="confirmDelete()">Delete</button>
+                <button class="btn-cancel" onclick="window.closeDeleteModal()">Cancel</button>
+                <button class="btn-delete" onclick="window.confirmDelete()">Delete</button>
             </div>
         </div>
     </div>
@@ -2647,6 +2647,15 @@ async function initializeUser(user) {
         var currentGadgetFilter = 'all';
         var currentDigitalFilter = 'all';
         var deleteCallback = null;
+        
+        // Ensure modals are hidden on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteModal = document.getElementById('deleteModal');
+            if (deleteModal) {
+                deleteModal.classList.remove('active');
+                deleteModal.style.display = 'none';
+            }
+        });
 
         // Settings (loaded from Firestore)
         var gadgetCategories = [];
@@ -4294,7 +4303,9 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
         window.deleteGadget = function(firestoreId, name) {
             document.getElementById('deleteMessage').textContent = 
                 `Are you sure you want to delete "${name}"? This action cannot be undone.`;
-            document.getElementById('deleteModal').classList.add('active');
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('active');
+            modal.style.display = 'flex';
             
             deleteCallback = async () => {
                 try {
@@ -4488,7 +4499,9 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
         window.deleteGame = function(firestoreId, title) {
             document.getElementById('deleteMessage').textContent = 
                 `Are you sure you want to delete "${title}"? This action cannot be undone.`;
-            document.getElementById('deleteModal').classList.add('active');
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('active');
+            modal.style.display = 'flex';
             
             deleteCallback = async () => {
                 try {
@@ -4529,7 +4542,9 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
 
         // Modal functions
         window.closeDeleteModal = function() {
-            document.getElementById('deleteModal').classList.remove('active');
+            const modal = document.getElementById('deleteModal');
+            modal.classList.remove('active');
+            modal.style.display = 'none';
             deleteCallback = null;
         };
 
@@ -4827,7 +4842,9 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
         window.deleteDigital = function(firestoreId, name) {
             document.getElementById('deleteMessage').textContent = 
                 `Are you sure you want to delete "${name}"? This action cannot be undone.`;
-            document.getElementById('deleteModal').classList.add('active');
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('active');
+            modal.style.display = 'flex';
             
             deleteCallback = async () => {
                 try {
