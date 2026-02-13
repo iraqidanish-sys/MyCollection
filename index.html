@@ -210,26 +210,97 @@
             object-fit: contain !important;
             display: block !important;
         }
-
-        .icon-img-wrap-sm {
-            width: 22px;
-            height: 22px;
-            overflow: hidden;
-            flex-shrink: 0;
-            border-radius: 4px;
-            background: rgba(255,255,255,0.9);
-            display: inline-flex;
+        
+        /* Custom select dropdown styling */
+        .custom-select-trigger {
+            position: relative;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 2px;
-            box-sizing: border-box;
+            gap: 8px;
+            transition: all 0.3s ease;
         }
-
-        .icon-img-wrap-sm img {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: contain;
-            display: block;
+        
+        .custom-select-trigger:hover,
+        .custom-select-trigger.active {
+            border-color: #10b981;
+            background: rgba(30, 41, 59, 0.95);
+        }
+        
+        .custom-select-arrow {
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+        
+        .custom-select-trigger.active .custom-select-arrow {
+            transform: rotate(180deg);
+        }
+        
+        .custom-select-icon {
+            width: 24px !important;
+            height: 24px !important;
+            object-fit: contain !important;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3px;
+            flex-shrink: 0;
+        }
+        
+        .custom-select-options {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.98);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        
+        .custom-select-options.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+        
+        .custom-select-option {
+            padding: 10px 12px;
+            cursor: pointer;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .custom-select-option:hover {
+            background: rgba(16, 185, 129, 0.15);
+        }
+        
+        .custom-select-option.selected {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        #platform-select-wrapper {
+            position: relative;
+        }
+        
+        #platform-select-wrapper select {
+            display: none;
         }
 
         /* Form grid class - properly responsive */
@@ -327,16 +398,21 @@
 
         .stat-label {
             font-size: 12px;
-            color: var(--text-muted);
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             margin-bottom: 8px;
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stat-value {
             font-size: 36px;
             font-weight: 800;
             font-family: 'Space Mono', monospace;
+            color: #ffffff;
         }
 
         /* Items Grid */
@@ -822,15 +898,16 @@
             
             .stat-value { 
                 font-size: 24px !important;
-                background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
+                color: #ffffff !important;
+                font-weight: 800;
             }
             
             .stat-label { 
                 font-size: 11px;
-                color: rgba(255, 255, 255, 0.6);
-                font-weight: 600;
+                font-weight: 700;
+                background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
             }
 
             .add-form { 
@@ -1065,7 +1142,7 @@
                     <div id="profileMenu" style="display:none; position:absolute; top:52px; right:0; min-width:220px; background:rgba(15,23,42,0.98); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:8px; z-index:9999; box-shadow:0 16px 48px rgba(0,0,0,0.5);">
                         <div id="profileMenuName" style="padding:12px 14px 4px; font-weight:700; font-size:15px; color:#fff;"></div>
                         <div id="profileMenuEmail" style="padding:0 14px 12px; font-size:12px; color:rgba(255,255,255,0.5); border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:8px; word-break:break-all;"></div>
-                        <div onclick="showSection('settings'); toggleProfileMenu();" style="padding:10px 14px; cursor:pointer; border-radius:10px; color:#e2e8f0; font-size:14px; display:flex; align-items:center; gap:10px;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">⚙️ Settings</div>
+                        <div id="profileMenuAdmin" onclick="showSection('admin'); toggleProfileMenu();" style="padding:10px 14px; cursor:pointer; border-radius:10px; background:linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-size:14px; display:none; align-items:center; gap:10px; border:1px solid rgba(251, 191, 36, 0.2); margin-bottom:8px;" onmouseover="this.style.background='rgba(251, 191, 36, 0.1)'; this.style.borderColor='rgba(251, 191, 36, 0.4)'" onmouseout="this.style.background='transparent'; this.style.borderColor='rgba(251, 191, 36, 0.2)'">👑 Admin Panel</div>
                         <div style="border-top:1px solid rgba(255,255,255,0.08); margin:8px 0;"></div>
                         <div onclick="document.getElementById('signOutBtn').click(); toggleProfileMenu();" style="padding:10px 14px; cursor:pointer; border-radius:10px; color:#ef4444; font-size:14px; display:flex; align-items:center; gap:10px;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">🚪 Sign Out</div>
                     </div>
@@ -1082,7 +1159,7 @@
                 <p style="color:var(--text-secondary);margin-bottom:28px;">Welcome back!</p>
 
                 <div style="margin-bottom:24px;">
-                    <h3 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📱 Gadgets</h3>
+                    <h3 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;background:linear-gradient(135deg, #10b981 0%, #06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">📱 Gadgets</h3>
                     <div class="stats-grid">
                         <div class="stat-card"><div class="stat-content"><div class="stat-label">Total</div><div class="stat-value" id="dash-total-gadgets">0</div></div></div>
                         <div class="stat-card"><div class="stat-content"><div class="stat-label">Current Value</div><div class="stat-value" style="font-size:22px;" id="dash-gadgets-value">₹0</div></div></div>
@@ -1092,7 +1169,7 @@
                 </div>
 
                 <div style="margin-bottom:24px;">
-                    <h3 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🎮 Games</h3>
+                    <h3 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;background:linear-gradient(135deg, #10b981 0%, #06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">🎮 Games</h3>
                     <div class="stats-grid">
                         <div class="stat-card"><div class="stat-content"><div class="stat-label">Total</div><div class="stat-value" id="dash-total-games">0</div></div></div>
                         <div class="stat-card"><div class="stat-content"><div class="stat-label">Current Value</div><div class="stat-value" style="font-size:22px;" id="dash-games-value">₹0</div></div></div>
@@ -1102,7 +1179,7 @@
                 </div>
 
                 <div style="margin-bottom:24px;">
-                    <h3 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">💳 Digital</h3>
+                    <h3 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;background:linear-gradient(135deg, #10b981 0%, #06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">💳 Digital</h3>
                     <div class="stats-grid">
                         <div class="stat-card"><div class="stat-content"><div class="stat-label">Total Purchases</div><div class="stat-value" id="dash-total-digital">0</div></div></div>
                         <div class="stat-card"><div class="stat-content"><div class="stat-label">Total Spent</div><div class="stat-value" style="font-size:22px;" id="dash-digital-spent">₹0</div></div></div>
@@ -1111,7 +1188,7 @@
                 </div>
 
                 <div>
-                    <h3 style="font-size:13px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">🕐 Recent Activity</h3>
+                    <h3 style="font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;background:linear-gradient(135deg, #10b981 0%, #06b6d4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">🕐 Recent Activity</h3>
                     <div id="recent-items" class="items-grid"></div>
                 </div>
             </div>
@@ -1751,6 +1828,10 @@ onAuthStateChanged(auth, async (user) => {
             if (isAdmin(user)) {
                 const adminNav = document.getElementById('admin-nav');
                 if (adminNav) adminNav.style.display = 'block';
+                
+                // Also show admin option in profile menu
+                const profileMenuAdmin = document.getElementById('profileMenuAdmin');
+                if (profileMenuAdmin) profileMenuAdmin.style.display = 'flex';
             }
 
             // Initialize user data
