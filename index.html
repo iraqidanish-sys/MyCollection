@@ -136,6 +136,19 @@
             }
         }
 
+        @keyframes floatCategoryIcon {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateY(0px);
+            }
+            50% {
+                transform: translate(-50%, -50%) translateY(-3px);
+            }
+        }
+
+        .floating-category-icon {
+            animation: floatCategoryIcon 3s ease-in-out infinite;
+        }
+
         /* Desktop Navigation */
         .desktop-nav-links {
             display: flex;
@@ -688,6 +701,10 @@
         .bottom-nav-icon {
             font-size: 24px;
         }
+        
+        .bottom-nav-icon svg {
+            display: block;
+        }
 
         .bottom-nav-label {
             font-size: 11px;
@@ -807,6 +824,10 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
             border-color: rgba(16, 185, 129, 0.4);
+        }
+        
+        .settings-list-item svg {
+            flex-shrink: 0;
         }
 
         /* Loading */
@@ -3107,22 +3128,24 @@ async function loadSettings() {
             container.innerHTML = items.map((item, index) => {
                 let displayContent = '';
                 
+                // Remove emojis from text for display
+                const cleanText = item.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u0000-\u001F\u007F-\u009F\u2000-\u206F\uE000-\uF8FF\uD800-\uDFFF]/gu, '').trim();
+                
                 // Check if this is a game platform and has a custom uploaded icon
                 if (type === 'gamePlatform') {
                     const customIcon = getCustomIconForPlatform(item);
                     if (customIcon) {
                         // Show custom uploaded icon
-                        const textWithoutEmoji = removeEmojiFromText(item);
-                        displayContent = `<span class="icon-img-wrap-sm"><img src="${customIcon.iconUrl}" alt="${item}"></span> <span style="font-size:13px;font-weight:600;">${textWithoutEmoji}</span>`;
+                        displayContent = `<span class="icon-img-wrap-sm"><img src="${customIcon.iconUrl}" alt="${cleanText}"></span> <span style="font-size:13px;font-weight:600;">${cleanText}</span>`;
                     } else {
                         // Use SVG icon
                         const animationDelay = (index * 0.1) % 1;
-                        displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size:13px;font-weight:600;margin-left:6px;">${item}</span>`;
+                        displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size:13px;font-weight:600;margin-left:6px;">${cleanText}</span>`;
                     }
                 } else {
-                    // Use SVG icon for all other types
+                    // Use SVG icon for all other types (gadgets, genres, digital types)
                     const animationDelay = (index * 0.1) % 1;
-                    displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size:13px;font-weight:600;margin-left:6px;">${item}</span>`;
+                    displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size:13px;font-weight:600;margin-left:6px;">${cleanText}</span>`;
                 }
                 
                 return `
