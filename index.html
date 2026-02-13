@@ -1592,12 +1592,28 @@
                     <h3 style="margin-bottom:16px;">🔐 Encryption</h3>
                     <div id="encryption-status" style="padding:16px;border-radius:12px;border:1px solid rgba(148,163,184,0.2);background:rgba(148,163,184,0.1);margin-bottom:16px;display:flex;align-items:center;gap:12px;">
                         <span id="encryption-status-icon" style="font-size:24px;">🔓</span>
-                        <div>
+                        <div style="flex:1;">
                             <div id="encryption-status-text" style="font-weight:700;font-size:15px;">Encryption Disabled</div>
                             <div id="encryption-status-subtitle" style="font-size:12px;color:var(--text-muted);">Your data is stored without encryption</div>
                         </div>
                     </div>
-                    <button onclick="const modal = document.getElementById('encryptionSetupModal'); modal.style.display='flex'; modal.classList.add('active'); console.log('Modal opened');" class="btn" style="background:linear-gradient(135deg,#10b981 0%,#06b6d4 100%);">🔐 Setup Encryption</button>
+                    
+                    <!-- Show when encryption is DISABLED -->
+                    <div id="encryption-disabled-controls" style="display:block;">
+                        <button onclick="const modal = document.getElementById('encryptionSetupModal'); modal.style.display='flex'; modal.classList.add('active'); console.log('Modal opened');" class="btn" style="background:linear-gradient(135deg,#10b981 0%,#06b6d4 100%); width: 100%;">🔐 Setup Encryption</button>
+                    </div>
+                    
+                    <!-- Show when encryption is ENABLED -->
+                    <div id="encryption-enabled-controls" style="display:none;">
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button onclick="if(confirm('⚠️ Are you sure you want to disable encryption?\\n\\nYour data will no longer be encrypted.')) { disableEncryption(); }" class="btn" style="flex:1;background:rgba(239,68,68,0.2);color:#ef4444;border:1px solid rgba(239,68,68,0.3);">
+                                🔓 Disable Encryption
+                            </button>
+                        </div>
+                        <p style="margin-top:12px;font-size:12px;color:var(--text-muted);line-height:1.4;">
+                            ℹ️ To change your password, disable encryption and set it up again.
+                        </p>
+                    </div>
                 </div>
 
                 <div class="add-form" style="margin-bottom:24px;">
@@ -1915,25 +1931,42 @@
         };
 
         window.decryptData = async function(encryptedDoc) {
-            // If data is not encrypted, return as-is
-            if (!encryptedDoc || !encryptedDoc.encrypted) {
+            // If data is null or undefined, return as-is
+            if (!encryptedDoc) {
                 return encryptedDoc;
             }
             
-            // If data IS encrypted but user hasn't unlocked
+            // If data is not marked as encrypted, return as-is
+            if (!encryptedDoc.encrypted) {
+                return encryptedDoc;
+            }
+            
+            // If data IS encrypted but user hasn't unlocked yet
             if (!encryptionManager.isUnlocked) {
                 console.warn('Data is encrypted but not unlocked yet');
-                // Return the encrypted doc without decrypting
-                // This allows the app to load, user just won't see decrypted data
+                // Return unencrypted placeholder or the encrypted doc
                 return encryptedDoc;
             }
             
             // Try to decrypt
             try {
-                return await encryptionManager.decrypt(encryptedDoc.data);
+                const decrypted = await encryptionManager.decrypt(encryptedDoc.data);
+                return decrypted;
             } catch (error) {
-                console.error('Decryption error:', error);
-                // Return original doc if decryption fails
+                console.error('Decryption error for document:', error);
+                // If decryption fails, this might be old unencrypted data
+                // Return it without the encrypted wrapper
+                if (encryptedDoc.data) {
+                    // Try to parse if it's a string
+                    try {
+                        return JSON.parse(encryptedDoc.data);
+                    } catch {
+                        // If not valid JSON, return the original doc without encrypted flag
+                        const { encrypted, ...originalData } = encryptedDoc;
+                        return originalData;
+                    }
+                }
+                // Last resort: return as-is
                 return encryptedDoc;
             }
         };
@@ -5100,6 +5133,8 @@ window.importDigitalCSV = async function (event) {
             const statusText = document.getElementById('encryption-status-text');
             const statusSubtitle = document.getElementById('encryption-status-subtitle');
             const statusContainer = document.getElementById('encryption-status');
+            const disabledControls = document.getElementById('encryption-disabled-controls');
+            const enabledControls = document.getElementById('encryption-enabled-controls');
             
             // If essential elements don't exist, skip update silently
             if (!statusIcon || !statusText || !statusSubtitle || !statusContainer) {
@@ -5112,12 +5147,20 @@ window.importDigitalCSV = async function (event) {
                 statusSubtitle.textContent = 'Your data is protected with end-to-end encryption';
                 statusContainer.style.background = 'rgba(16, 185, 129, 0.15)';
                 statusContainer.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                
+                // Show enabled controls, hide disabled controls
+                if (disabledControls) disabledControls.style.display = 'none';
+                if (enabledControls) enabledControls.style.display = 'block';
             } else {
                 statusIcon.textContent = '🔓';
                 statusText.textContent = 'Encryption Disabled';
                 statusSubtitle.textContent = 'Your data is stored without encryption';
                 statusContainer.style.background = 'rgba(148, 163, 184, 0.1)';
                 statusContainer.style.borderColor = 'rgba(148, 163, 184, 0.2)';
+                
+                // Show disabled controls, hide enabled controls
+                if (disabledControls) disabledControls.style.display = 'block';
+                if (enabledControls) enabledControls.style.display = 'none';
             }
         };
         
@@ -5225,44 +5268,8 @@ window.importDigitalCSV = async function (event) {
         };
         
         window.disableEncryption = async function() {
-            if (!confirm('⚠️ Are you sure you want to disable encryption?\n\nYour data will be stored WITHOUT encryption. This means it will be less secure.')) {
-                return;
-            }
-            
-            if (!confirm('⚠️ FINAL WARNING: Disable encryption?\n\nThis action will decrypt all your data and remove encryption protection.')) {
-                return;
-            }
-            
             try {
-                console.log('🔄 Decrypting and removing encryption...');
-                
-                // Decrypt and re-save all gadgets without encryption
-                for (const gadget of gadgets) {
-                    // Remove firestoreId before saving
-                    const { firestoreId, ...gadgetData } = gadget;
-                    await updateDoc(
-                        doc(db, 'users', currentUserUID, 'gadgets', firestoreId),
-                        gadgetData
-                    );
-                }
-                
-                // Decrypt and re-save all games without encryption
-                for (const game of games) {
-                    const { firestoreId, ...gameData } = game;
-                    await updateDoc(
-                        doc(db, 'users', currentUserUID, 'games', firestoreId),
-                        gameData
-                    );
-                }
-                
-                // Decrypt and re-save all digital purchases without encryption
-                for (const digital of digitalPurchases) {
-                    const { firestoreId, ...digitalData } = digital;
-                    await updateDoc(
-                        doc(db, 'users', currentUserUID, 'digitalPurchases', firestoreId),
-                        digitalData
-                    );
-                }
+                console.log('🔄 Disabling encryption...');
                 
                 // Remove encryption settings from localStorage
                 localStorage.removeItem('encryptionEnabled_' + currentUserUID);
@@ -5280,7 +5287,10 @@ window.importDigitalCSV = async function (event) {
                     console.warn('Could not update encryption status display:', statusError);
                 }
                 
-                alert('✅ Encryption disabled successfully!\n\nYour data is now stored without encryption.');
+                alert('✅ Encryption disabled!\\n\\nYour app will reload to apply changes.');
+                
+                // Reload the page to clear everything
+                window.location.reload();
                 
             } catch (error) {
                 console.error('Disable encryption error:', error);
