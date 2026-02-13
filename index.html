@@ -1535,30 +1535,8 @@
                                 </div>
                             </div>
                             <div class="input-group"><label>Genre</label><select id="gm-genre"></select></div>
-                            <div class="input-group"><label>Condition</label>
-                                <select id="gm-condition" required>
-                                    <option value="New">New</option>
-                                    <option value="Like New">Like New</option>
-                                    <option value="Good" selected>Good</option>
-                                    <option value="Fair">Fair</option>
-                                    <option value="Poor">Poor</option>
-                                    <option value="Digital">Digital</option>
-                                </select>
-                            </div>
                             <div class="input-group"><label>Buy Price (₹)</label><input type="number" id="gm-buy-price" placeholder="0" required></div>
                             <div class="input-group"><label>Purchase Date</label><input type="date" id="gm-buy-date" required></div>
-                            <div class="input-group">
-                                <label>Expected Sale Price (₹) <span style="color:var(--text-muted);font-size:11px;">(current market value)</span></label>
-                                <div style="display:flex;gap:8px;">
-                                    <input type="number" id="gm-expected-price" placeholder="Enter manually or check sites" style="flex:1;">
-                                    <button type="button" id="fetch-price-btn" onclick="fetchGamePrice()" class="btn" style="padding:10px 16px;white-space:nowrap;background:linear-gradient(135deg,#8b5cf6 0%,#6366f1 100%);">
-                                        🔗 Check Sites
-                                    </button>
-                                </div>
-                                <div id="price-sources" style="font-size:11px;color:var(--text-muted);margin-top:6px;display:none;">
-                                    Checking: Gameloot, Gamenation, CEX India...
-                                </div>
-                            </div>
                             <div class="input-group"><label>Sell Price (₹) <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label><input type="number" id="gm-sell-price" placeholder="Leave blank if owned"></div>
                             <div class="input-group"><label>Sell Date <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label><input type="date" id="gm-sell-date"></div>
                         </div>
@@ -3958,84 +3936,12 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
             }
         };
 
-        // Open price check links for game
-        window.fetchGamePrice = async function() {
-            const titleInput = document.getElementById('gm-title');
-            const platformInput = document.getElementById('gm-platform');
-            const sourcesDiv = document.getElementById('price-sources');
-            
-            const title = titleInput.value.trim();
-            const platform = platformInput.value;
-            
-            if (!title) {
-                alert('⚠️ Please enter a game title first');
-                titleInput.focus();
-                return;
-            }
-            
-            // Create search URLs
-            const searchQuery = encodeURIComponent(`${title} ${platform} price`);
-            const gamelootUrl = `https://gameloot.in/search?q=${searchQuery}`;
-            const gamenationUrl = `https://gamenation.in/search?q=${searchQuery}`;
-            const cexUrl = `https://in.webuy.com/search?stext=${searchQuery}`;
-            
-            // Show links
-            sourcesDiv.style.display = 'block';
-            sourcesDiv.style.color = '#10b981';
-            sourcesDiv.innerHTML = `
-                Opening price check sites... Check these and enter the price manually:<br>
-                <a href="${gamelootUrl}" target="_blank" style="color:#10b981;text-decoration:underline;">Gameloot</a> • 
-                <a href="${gamenationUrl}" target="_blank" style="color:#10b981;text-decoration:underline;">Gamenation</a> • 
-                <a href="${cexUrl}" target="_blank" style="color:#10b981;text-decoration:underline;">CEX India</a>
-            `;
-            
-            // Open the sites
-            window.open(gamelootUrl, '_blank');
-            setTimeout(() => window.open(gamenationUrl, '_blank'), 500);
-            setTimeout(() => window.open(cexUrl, '_blank'), 1000);
-        };
-
-        // Open price check links for edit modal
-        window.fetchEditGamePrice = async function() {
-            const titleInput = document.getElementById('edit-gm-title');
-            const platformInput = document.getElementById('edit-gm-platform');
-            
-            const title = titleInput.value.trim();
-            const platform = platformInput.value;
-            
-            if (!title) {
-                alert('⚠️ Please enter a game title first');
-                titleInput.focus();
-                return;
-            }
-            
-            if (!platform) {
-                alert('⚠️ Please select a platform first');
-                platformInput.focus();
-                return;
-            }
-            
-            // Create search URLs
-            const searchQuery = encodeURIComponent(`${title} ${platform} price`);
-            const gamelootUrl = `https://gameloot.in/search?q=${searchQuery}`;
-            const gamenationUrl = `https://gamenation.in/search?q=${searchQuery}`;
-            const cexUrl = `https://in.webuy.com/search?stext=${searchQuery}`;
-            
-            // Confirm before opening
-            if (confirm('This will open 3 tabs with price check sites:\n\n• Gameloot\n• Gamenation\n• CEX India\n\nCheck the prices and enter manually. Continue?')) {
-                window.open(gamelootUrl, '_blank');
-                setTimeout(() => window.open(gamenationUrl, '_blank'), 500);
-                setTimeout(() => window.open(cexUrl, '_blank'), 1000);
-            }
-        };
-
         // Game form handler
         document.getElementById('game-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const sellPrice = document.getElementById('gm-sell-price').value;
             const sellDate = document.getElementById('gm-sell-date').value;
-            const expectedPrice = document.getElementById('gm-expected-price').value;
 
             const game = {
                 title: document.getElementById('gm-title').value,
@@ -4044,7 +3950,6 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
                 buyPrice: parseFloat(document.getElementById('gm-buy-price').value),
                 buyDate: document.getElementById('gm-buy-date').value,
                 condition: document.getElementById('gm-condition').value,
-                expectedPrice: expectedPrice ? parseFloat(expectedPrice) : null,
                 sellPrice: sellPrice ? parseFloat(sellPrice) : null,
                 sellDate: sellDate || null,
                 notes: document.getElementById('gm-notes').value,
@@ -4145,16 +4050,6 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
                                 <span class="info-label">Buy Price</span>
                                 <span class="info-value">₹${g.buyPrice.toFixed(2)}</span>
                             </div>
-                            ${g.expectedPrice && g.status === 'owned' ? `
-                            <div class="info-row">
-                                <span class="info-label">Expected Sale Price</span>
-                                <span class="info-value" style="color: #8b5cf6; font-weight: 600;">₹${g.expectedPrice.toFixed(2)}</span>
-                            </div>
-                            <div class="info-row">
-                                <span class="info-label">Potential Profit</span>
-                                <span class="info-value ${(g.expectedPrice - g.buyPrice) > 0 ? 'profit-positive' : 'profit-negative'}">₹${(g.expectedPrice - g.buyPrice).toFixed(2)}</span>
-                            </div>
-                            ` : ''}
                             ${g.sellPrice ? `
                             <div class="info-row">
                                 <span class="info-label">Sell Price</span>
@@ -4227,7 +4122,6 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
             document.getElementById('edit-gm-buy-price').value = game.buyPrice;
             document.getElementById('edit-gm-buy-date').value = game.buyDate;
             document.getElementById('edit-gm-condition').value = game.condition;
-            document.getElementById('edit-gm-expected-price').value = game.expectedPrice || '';
             document.getElementById('edit-gm-sell-price').value = game.sellPrice || '';
             document.getElementById('edit-gm-sell-date').value = game.sellDate || '';
             document.getElementById('edit-gm-notes').value = game.notes || '';
@@ -4253,7 +4147,6 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
             
             const sellPrice = document.getElementById('edit-gm-sell-price').value;
             const sellDate = document.getElementById('edit-gm-sell-date').value;
-            const expectedPrice = document.getElementById('edit-gm-expected-price').value;
 
             const game = {
                 title: sanitizeText(document.getElementById('edit-gm-title').value),
@@ -4262,7 +4155,6 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
                 condition: document.getElementById('edit-gm-condition').value,
                 buyPrice: sanitizeNumber(parseFloat(document.getElementById('edit-gm-buy-price').value)),
                 buyDate: document.getElementById('edit-gm-buy-date').value,
-                expectedPrice: expectedPrice ? sanitizeNumber(parseFloat(expectedPrice)) : null,
                 sellPrice: sellPrice ? sanitizeNumber(parseFloat(sellPrice)) : null,
                 sellDate: sellDate || null,
                 notes: sanitizeHTML(document.getElementById('edit-gm-notes').value),
@@ -5712,15 +5604,6 @@ window.importDigitalCSV = async function (event) {
                 <div class="input-group">
                     <label>Purchase Date</label>
                     <input type="date" id="edit-gm-buy-date" required>
-                </div>
-                <div class="input-group">
-                    <label>Expected Sale Price (₹) <span style="color:var(--text-muted);font-size:11px;">(current market value)</span></label>
-                    <div style="display:flex;gap:8px;">
-                        <input type="number" id="edit-gm-expected-price" placeholder="Enter manually or check sites" style="flex:1;">
-                        <button type="button" onclick="fetchEditGamePrice()" class="btn" style="padding:10px 16px;white-space:nowrap;background:linear-gradient(135deg,#8b5cf6 0%,#6366f1 100%);">
-                            🔗 Check Sites
-                        </button>
-                    </div>
                 </div>
                 <div class="input-group">
                     <label>Sell Price (₹) <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label>
