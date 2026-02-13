@@ -5058,9 +5058,14 @@ window.importDigitalCSV = async function (event) {
                 
                 alert('✅ Encryption enabled! Your data is now protected. You will need to enter your password on next login.');
                 
-                // Update encryption status in settings
-                if (typeof updateEncryptionStatus === 'function') {
-                    updateEncryptionStatus();
+                // Update encryption status in settings (with error handling)
+                try {
+                    if (typeof updateEncryptionStatus === 'function') {
+                        updateEncryptionStatus();
+                    }
+                } catch (statusError) {
+                    console.warn('Could not update encryption status display:', statusError);
+                    // Don't throw - encryption is already enabled successfully
                 }
                 
             } catch (error) {
@@ -5090,18 +5095,14 @@ window.importDigitalCSV = async function (event) {
         window.updateEncryptionStatus = function() {
             const isEnabled = encryptionManager.isEncryptionEnabled();
             
-            // Safety check - only update if elements exist
+            // Only update the basic status display elements that actually exist
             const statusIcon = document.getElementById('encryption-status-icon');
             const statusText = document.getElementById('encryption-status-text');
             const statusSubtitle = document.getElementById('encryption-status-subtitle');
             const statusContainer = document.getElementById('encryption-status');
-            const disabledView = document.getElementById('encryption-disabled-view');
-            const enabledView = document.getElementById('encryption-enabled-view');
-            const setupForm = document.getElementById('encryption-setup-form');
             
-            // If essential elements don't exist, skip update
+            // If essential elements don't exist, skip update silently
             if (!statusIcon || !statusText || !statusSubtitle || !statusContainer) {
-                console.log('ℹ️ Encryption status elements not found, skipping update');
                 return;
             }
             
@@ -5111,44 +5112,47 @@ window.importDigitalCSV = async function (event) {
                 statusSubtitle.textContent = 'Your data is protected with end-to-end encryption';
                 statusContainer.style.background = 'rgba(16, 185, 129, 0.15)';
                 statusContainer.style.borderColor = 'rgba(16, 185, 129, 0.3)';
-                if (disabledView) disabledView.style.display = 'none';
-                if (enabledView) enabledView.style.display = 'block';
-                if (setupForm) setupForm.style.display = 'none';
             } else {
                 statusIcon.textContent = '🔓';
                 statusText.textContent = 'Encryption Disabled';
                 statusSubtitle.textContent = 'Your data is stored without encryption';
                 statusContainer.style.background = 'rgba(148, 163, 184, 0.1)';
                 statusContainer.style.borderColor = 'rgba(148, 163, 184, 0.2)';
-                if (disabledView) disabledView.style.display = 'block';
-                if (enabledView) enabledView.style.display = 'none';
-                if (setupForm) setupForm.style.display = 'none';
             }
         };
         
         window.showEnableEncryptionForm = function() {
-            const disabledView = document.getElementById('encryption-disabled-view');
-            const setupForm = document.getElementById('encryption-setup-form');
-            
-            if (disabledView) disabledView.style.display = 'none';
-            if (setupForm) setupForm.style.display = 'block';
+            // This function is no longer needed since we use the modal
+            console.log('Opening encryption setup modal...');
+            const modal = document.getElementById('encryptionSetupModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('active');
+            }
         };
         
         window.cancelEnableEncryption = function() {
-            const setupForm = document.getElementById('encryption-setup-form');
-            const disabledView = document.getElementById('encryption-disabled-view');
-            const masterPassword = document.getElementById('settings-master-password');
-            const confirmPassword = document.getElementById('settings-master-password-confirm');
-            
-            if (setupForm) setupForm.style.display = 'none';
-            if (disabledView) disabledView.style.display = 'block';
-            if (masterPassword) masterPassword.value = '';
-            if (confirmPassword) confirmPassword.value = '';
+            // This function is no longer needed since we use the modal
+            console.log('Canceling encryption setup...');
         };
         
         window.enableEncryptionFromSettings = async function() {
-            const password = document.getElementById('settings-master-password').value;
-            const confirmPassword = document.getElementById('settings-master-password-confirm').value;
+            const passwordField = document.getElementById('settings-master-password');
+            const confirmPasswordField = document.getElementById('settings-master-password-confirm');
+            
+            // If password fields don't exist, open the modal instead
+            if (!passwordField || !confirmPasswordField) {
+                console.log('Password fields not found, opening modal...');
+                const modal = document.getElementById('encryptionSetupModal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    modal.classList.add('active');
+                }
+                return;
+            }
+            
+            const password = passwordField.value;
+            const confirmPassword = confirmPasswordField.value;
             
             if (!password || password.length < 8) {
                 alert('⚠️ Password must be at least 8 characters long');
@@ -5199,13 +5203,20 @@ window.importDigitalCSV = async function (event) {
                 }
                 
                 document.body.classList.add('encrypted');
-                updateEncryptionStatus();
+                
+                try {
+                    updateEncryptionStatus();
+                } catch (statusError) {
+                    console.warn('Could not update encryption status display:', statusError);
+                }
                 
                 alert('✅ Encryption enabled successfully!\n\nAll your data has been encrypted with your master password.');
                 
-                // Clear password fields
-                document.getElementById('settings-master-password').value = '';
-                document.getElementById('settings-master-password-confirm').value = '';
+                // Clear password fields if they exist
+                const masterPasswordField = document.getElementById('settings-master-password');
+                const confirmPasswordField = document.getElementById('settings-master-password-confirm');
+                if (masterPasswordField) masterPasswordField.value = '';
+                if (confirmPasswordField) confirmPasswordField.value = '';
                 
             } catch (error) {
                 console.error('Encryption setup error:', error);
@@ -5262,7 +5273,12 @@ window.importDigitalCSV = async function (event) {
                 encryptionManager.isUnlocked = false;
                 
                 document.body.classList.remove('encrypted');
-                updateEncryptionStatus();
+                
+                try {
+                    updateEncryptionStatus();
+                } catch (statusError) {
+                    console.warn('Could not update encryption status display:', statusError);
+                }
                 
                 alert('✅ Encryption disabled successfully!\n\nYour data is now stored without encryption.');
                 
