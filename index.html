@@ -19,16 +19,16 @@
     <style>
         :root {
             /* Glassmorphism Colors */
-            --bg-primary: #0a0e27;
-            --bg-secondary: #151932;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.1);
             --glass-shadow: rgba(0, 0, 0, 0.3);
             
             /* Gradients */
-            --gradient-primary: linear-gradient(135deg, #0dcaf0 0%, #8b5cf6 100%);
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
             --gradient-success: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
-            --gradient-info: linear-gradient(135deg, #0dcaf0 0%, #d946ef 100%);
+            --gradient-info: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
             --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
             
             /* Text */
@@ -37,9 +37,9 @@
             --text-muted: rgba(255, 255, 255, 0.4);
             
             /* Accents */
-            --accent-purple: #8b5cf6;
-            --accent-pink: #d946ef;
-            --accent-blue: #0dcaf0;
+            --accent-purple: #10b981;
+            --accent-pink: #06b6d4;
+            --accent-blue: #06b6d4;
         }
 
         * {
@@ -66,9 +66,9 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(13, 202, 240, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(217, 70, 239, 0.08) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
             z-index: 0;
             animation: bgShift 20s ease-in-out infinite;
         }
@@ -136,7 +136,7 @@
         }
 
         .desktop-nav-item.active {
-            background: rgba(102, 126, 234, 0.15);
+            background: rgba(16, 185, 129, 0.15);
             color: var(--accent-purple);
         }
 
@@ -352,7 +352,7 @@
         .price-tag {
             font-size: 16px;
             font-weight: 800;
-            color: #4facfe;
+            color: #06b6d4;
             font-family: 'Space Mono', monospace;
         }
 
@@ -375,8 +375,8 @@
         }
 
         .edit-icon {
-            background: rgba(79, 172, 254, 0.15);
-            color: #4facfe;
+            background: rgba(6, 182, 212, 0.15);
+            color: #06b6d4;
         }
 
         .delete-icon {
@@ -386,7 +386,7 @@
             font-weight: 700;
         }
 
-        .edit-icon:hover { background: rgba(79, 172, 254, 0.3); transform: scale(1.1); }
+        .edit-icon:hover { background: rgba(6, 182, 212, 0.3); transform: scale(1.1); }
         .delete-icon:hover { background: rgba(239, 68, 68, 0.3); transform: scale(1.1); }
 
         /* Status badges */
@@ -443,7 +443,7 @@
             transition: all 0.2s ease;
         }
 
-        .action-btn.edit  { background: rgba(79, 172, 254, 0.2); color: #4facfe; }
+        .action-btn.edit  { background: rgba(6, 182, 212, 0.2); color: #06b6d4; }
         .action-btn.delete { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
         .action-btn:hover { transform: scale(1.1); }
 
@@ -495,7 +495,7 @@
 
         .bottom-nav-item.active {
             color: var(--accent-purple);
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(16, 185, 129, 0.1);
         }
 
         .bottom-nav-icon {
@@ -521,7 +521,7 @@
             justify-content: center;
             font-size: 24px;
             cursor: pointer;
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
             transition: all 0.3s ease;
             z-index: 999;
         }
@@ -544,7 +544,7 @@
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
         }
 
         /* Forms */
@@ -603,8 +603,8 @@
         .loading-spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid rgba(102, 126, 234, 0.2);
-            border-top-color: #667eea;
+            border: 4px solid rgba(16, 185, 129, 0.2);
+            border-top-color: #10b981;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -818,34 +818,34 @@
     <!-- Login Screen -->
     <div id="loginScreen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0a1628 0%, #162447 50%, #1f1b3d 100%); z-index: 10000; display: none;">
         
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(51, 65, 85, 0.95) 100%); padding: 50px 40px; border-radius: 24px; width: 420px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(13, 202, 240, 0.2); border: 1px solid rgba(13, 202, 240, 0.2); backdrop-filter: blur(10px);">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(51, 65, 85, 0.95) 100%); padding: 50px 40px; border-radius: 24px; width: 420px; box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(10px);">
             
             <!-- Animated Logo -->
             <div style="position: relative; width: 120px; height: 120px; margin: 0 auto 30px; display: flex; align-items: center; justify-content: center;">
                 <div class="scifi-logo-container" style="position: relative; width: 80px; height: 80px;">
                     <!-- Outer rotating ring -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border: 2px solid rgba(13, 202, 240, 0.3); border-radius: 50%; animation: rotateRing 8s linear infinite;"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border: 2px solid rgba(16, 185, 129, 0.3); border-radius: 50%; animation: rotateRing 8s linear infinite;"></div>
                     
                     <!-- Middle pulsing ring -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; border: 2px solid rgba(139, 92, 246, 0.4); border-radius: 50%; animation: pulseRing 2s ease-in-out infinite;"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 55px; height: 55px; border: 2px solid rgba(6, 182, 212, 0.4); border-radius: 50%; animation: pulseRing 2s ease-in-out infinite;"></div>
                     
                     <!-- Core hexagon -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: linear-gradient(135deg, #0dcaf0 0%, #8b5cf6 100%); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); box-shadow: 0 0 30px rgba(13, 202, 240, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.2); animation: hexFloat 3s ease-in-out infinite;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); box-shadow: 0 0 30px rgba(16, 185, 129, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.2); animation: hexFloat 3s ease-in-out infinite;">
                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%); animation: innerGlow 2s ease-in-out infinite;"></div>
                     </div>
                     
                     <!-- Orbiting particles -->
-                    <div style="position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #0dcaf0; border-radius: 50%; box-shadow: 0 0 8px #0dcaf0; animation: orbit1 3s linear infinite;"></div>
-                    <div style="position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #8b5cf6; border-radius: 50%; box-shadow: 0 0 8px #8b5cf6; animation: orbit2 3s linear infinite;"></div>
-                    <div style="position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #d946ef; border-radius: 50%; box-shadow: 0 0 8px #d946ef; animation: orbit3 3s linear infinite;"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; animation: orbit1 3s linear infinite;"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #06b6d4; border-radius: 50%; box-shadow: 0 0 8px #06b6d4; animation: orbit2 3s linear infinite;"></div>
+                    <div style="position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: #06b6d4; border-radius: 50%; box-shadow: 0 0 8px #06b6d4; animation: orbit3 3s linear infinite;"></div>
                 </div>
             </div>
             
-            <h1 style="color: #f8f9fa; font-size: 32px; margin-bottom: 10px; text-align: center; font-weight: 800; background: linear-gradient(135deg, #0dcaf0 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">MyCollection</h1>
+            <h1 style="color: #f8f9fa; font-size: 32px; margin-bottom: 10px; text-align: center; font-weight: 800; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px;">MyCollection</h1>
             <h2 style="color: #f8f9fa; font-size: 20px; font-weight: 700; margin-bottom: 10px; text-align: center; letter-spacing: -0.5px;">System Access</h2>
             <p style="color: #94a3b8; margin-bottom: 35px; text-align: center; font-size: 14px; font-weight: 500;">Initialize secure session to manage your assets</p>
             
-            <button id="googleSignInBtn" style="width: 100%; background: linear-gradient(90deg, #0dcaf0 0%, #d946ef 100%); color: white; border: none; padding: 16px 30px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(13, 202, 240, 0.4);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(13, 202, 240, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(13, 202, 240, 0.4)'">
+            <button id="googleSignInBtn" style="width: 100%; background: linear-gradient(90deg, #10b981 0%, #06b6d4 100%); color: white; border: none; padding: 16px 30px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.3s ease; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 12px 32px rgba(16, 185, 129, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 24px rgba(16, 185, 129, 0.4)'">
                 <svg width="20" height="20" viewBox="0 0 20 20">
                     <path fill="white" d="M19.6 10.23c0-.82-.1-1.42-.25-2.05H10v3.72h5.5c-.15.96-.74 2.31-2.04 3.22v2.45h3.16c1.89-1.73 2.98-4.3 2.98-7.34z"/>
                     <path fill="white" d="M13.46 15.13c-.83.59-1.96 1-3.46 1-2.64 0-4.88-1.74-5.68-4.15H1.07v2.52C2.72 17.75 6.09 20 10 20c2.7 0 4.96-.89 6.62-2.42l-3.16-2.45z"/>
