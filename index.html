@@ -107,9 +107,21 @@
         .logo {
             font-size: 24px;
             font-weight: 800;
-            background: var(--gradient-primary);
+            background: linear-gradient(90deg, #10b981 0%, #06b6d4 25%, #10b981 50%, #06b6d4 75%, #10b981 100%);
+            background-size: 200% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
         }
 
         /* Desktop Navigation */
@@ -765,6 +777,26 @@
             color: rgba(255, 255, 255, 0.3);
         }
 
+        /* Settings Lists Grid */
+        .settings-list-item {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            min-height: 44px;
+        }
+        
+        .settings-list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
         /* Loading */
         #loadingScreen {
             position: fixed;
@@ -922,6 +954,14 @@
                 grid-template-columns: 1fr !important;
                 gap: 12px !important;
             }
+            
+            /* Settings lists - single column on mobile */
+            #gadget-categories-list,
+            #game-platforms-list,
+            #game-genres-list,
+            #digital-types-list {
+                grid-template-columns: 1fr !important;
+            }
 
             .filter-chip { 
                 padding: 8px 14px; 
@@ -948,10 +988,13 @@
             z-index: 10000;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         .modal.active {
             display: flex;
+            opacity: 1;
         }
 
         .modal-content {
@@ -962,6 +1005,12 @@
             padding: 32px;
             max-width: 500px;
             width: 90%;
+            transform: translateY(-20px);
+            transition: transform 0.2s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
         }
 
         .modal-header {
@@ -1304,7 +1353,7 @@
                         <input type="text" id="new-gadget-category" placeholder="New category" style="flex:1;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);border-radius:8px;color:#fff;font-family:inherit;">
                         <button class="btn" onclick="addGadgetCategory()">Add</button>
                     </div>
-                    <div id="gadget-categories-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+                    <div id="gadget-categories-list" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:10px;"></div>
                 </div>
 
                 <div class="add-form" style="margin-bottom:24px;">
@@ -1313,7 +1362,7 @@
                         <input type="text" id="new-game-platform" placeholder="New platform" style="flex:1;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);border-radius:8px;color:#fff;font-family:inherit;">
                         <button class="btn" onclick="addGamePlatform()">Add</button>
                     </div>
-                    <div id="game-platforms-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+                    <div id="game-platforms-list" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:10px;"></div>
                 </div>
 
                 <div class="add-form" style="margin-bottom:24px;">
@@ -1322,7 +1371,7 @@
                         <input type="text" id="new-game-genre" placeholder="New genre" style="flex:1;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);border-radius:8px;color:#fff;font-family:inherit;">
                         <button class="btn" onclick="addGameGenre()">Add</button>
                     </div>
-                    <div id="game-genres-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+                    <div id="game-genres-list" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:10px;"></div>
                 </div>
 
                 <div class="add-form" style="margin-bottom:24px;">
@@ -1331,7 +1380,7 @@
                         <input type="text" id="new-digital-type" placeholder="New type" style="flex:1;padding:10px 12px;background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);border-radius:8px;color:#fff;font-family:inherit;">
                         <button class="btn" onclick="addDigitalType()">Add</button>
                     </div>
-                    <div id="digital-types-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+                    <div id="digital-types-list" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));gap:10px;"></div>
                 </div>
 
                 <div class="add-form" style="margin-bottom:24px;">
@@ -2756,10 +2805,18 @@ async function loadSettings() {
 
         // Update all dropdowns with current settings
         function updateAllDropdowns() {
+            // Main form dropdowns
             updateDropdown('g-category', gadgetCategories);
             updateDropdown('gm-platform', gamePlatforms);
             updateDropdown('gm-genre', gameGenres);
             updateDropdown('d-type', digitalTypes);
+            
+            // Edit modal dropdowns
+            updateDropdown('edit-g-category', gadgetCategories);
+            updateDropdown('edit-gm-platform', gamePlatforms);
+            updateDropdown('edit-gm-genre', gameGenres);
+            updateDropdown('edit-d-type', digitalTypes);
+            
             updateIconPlatformDropdown();
             createCustomPlatformDropdown(); // Create visual dropdown with icons
         }
@@ -3022,24 +3079,24 @@ async function loadSettings() {
                 if (type === 'gamePlatform') {
                     const customIcon = getCustomIconForPlatform(item);
                     if (customIcon) {
-                        // Show custom uploaded icon — force size with both attribute AND style
+                        // Show custom uploaded icon
                         const textWithoutEmoji = removeEmojiFromText(item);
-                        displayContent = `<span class="icon-img-wrap-sm"><img src="${customIcon.iconUrl}" alt="${item}"></span> <span style="font-size:14px;">${textWithoutEmoji}</span>`;
+                        displayContent = `<span class="icon-img-wrap-sm"><img src="${customIcon.iconUrl}" alt="${item}"></span> <span style="font-size:13px;font-weight:600;">${textWithoutEmoji}</span>`;
                     } else {
                         // Use SVG icon
                         const animationDelay = (index * 0.1) % 1;
-                        displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size: 14px; margin-left: 8px;">${item}</span>`;
+                        displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size:13px;font-weight:600;margin-left:6px;">${item}</span>`;
                     }
                 } else {
                     // Use SVG icon for all other types
                     const animationDelay = (index * 0.1) % 1;
-                    displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size: 14px; margin-left: 8px;">${item}</span>`;
+                    displayContent = `${createSVGIcon(item, animationDelay)} <span style="font-size:13px;font-weight:600;margin-left:6px;">${item}</span>`;
                 }
                 
                 return `
-                    <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 12px 16px; border-radius: 10px; border: 1px solid rgba(148, 163, 184, 0.2); display: flex; align-items: center; gap: 10px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(16, 185, 129, 0.2)'; this.style.borderColor='rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0, 0, 0, 0.2)'; this.style.borderColor='rgba(148, 163, 184, 0.2)'">
+                    <div class="settings-list-item">
                         ${displayContent}
-                        <button onclick="window.remove${type.charAt(0).toUpperCase() + type.slice(1)}('${item.replace(/'/g, "\\'")}')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; margin-left: auto; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 16px rgba(239, 68, 68, 0.5)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(239, 68, 68, 0.3)'">×</button>
+                        <button onclick="window.remove${type.charAt(0).toUpperCase() + type.slice(1)}('${item.replace(/'/g, "\\'")}')" style="background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);border:none;color:white;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:13px;margin-left:auto;font-weight:600;transition:all 0.2s ease;box-shadow:0 2px 6px rgba(239, 68, 68, 0.3);" onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 4px 12px rgba(239, 68, 68, 0.5)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 2px 6px rgba(239, 68, 68, 0.3)'">×</button>
                     </div>
                 `;
             }).join('');
@@ -3518,23 +3575,61 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
             const gadget = gadgets.find(g => g.firestoreId === firestoreId);
             if (!gadget) return;
 
-            // Populate form
-            document.getElementById('g-name').value = gadget.name;
-            document.getElementById('g-category').value = gadget.category;
-            document.getElementById('g-price').value = gadget.price;
-            document.getElementById('g-date').value = gadget.date;
-            document.getElementById('g-sell-price').value = gadget.sellPrice || '';
-            document.getElementById('g-sell-date').value = gadget.sellDate || '';
-            document.getElementById('g-notes').value = gadget.notes || '';
+            // Populate modal form
+            document.getElementById('edit-g-name').value = gadget.name;
+            document.getElementById('edit-g-category').value = gadget.category;
+            document.getElementById('edit-g-price').value = gadget.price;
+            document.getElementById('edit-g-date').value = gadget.date;
+            document.getElementById('edit-g-sell-price').value = gadget.sellPrice || '';
+            document.getElementById('edit-g-sell-date').value = gadget.sellDate || '';
+            document.getElementById('edit-g-notes').value = gadget.notes || '';
 
             // Store editing ID
             window.editingGadgetId = firestoreId;
             
-            // Change button text
-            document.querySelector('#gadget-form .btn').textContent = 'Update Gadget';
+            // Show modal
+            const modal = document.getElementById('gadgetEditModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        };
 
-            // Scroll to form
-            document.getElementById('gadgets').scrollIntoView({ behavior: 'smooth' });
+        window.closeGadgetEditModal = function() {
+            const modal = document.getElementById('gadgetEditModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 200);
+            window.editingGadgetId = null;
+        };
+
+        window.updateGadgetFromModal = async function(e) {
+            e.preventDefault();
+            
+            const sellPrice = document.getElementById('edit-g-sell-price').value;
+            const sellDate = document.getElementById('edit-g-sell-date').value;
+
+            const gadget = {
+                name: sanitizeText(document.getElementById('edit-g-name').value),
+                category: sanitizeText(document.getElementById('edit-g-category').value),
+                price: sanitizeNumber(parseFloat(document.getElementById('edit-g-price').value)),
+                date: document.getElementById('edit-g-date').value,
+                sellPrice: sellPrice ? sanitizeNumber(parseFloat(sellPrice)) : null,
+                sellDate: sellDate || null,
+                notes: sanitizeHTML(document.getElementById('edit-g-notes').value),
+                status: (sellPrice && sellDate) ? 'sold' : 'owned',
+                timestamp: Date.now()
+            };
+
+            try {
+                const gadgetToSave = await encryptData(gadget);
+                await updateDoc(
+                    doc(db, 'users', currentUserUID, 'gadgets', window.editingGadgetId),
+                    gadgetToSave
+                );
+                await loadData();
+                closeGadgetEditModal();
+            } catch (error) {
+                console.error('Error updating gadget:', error);
+                alert('Error updating gadget. Please try again.');
+            }
         };
 
         // Game form handler
@@ -3714,25 +3809,65 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
             const game = games.find(g => g.firestoreId === firestoreId);
             if (!game) return;
 
-            // Populate form
-            document.getElementById('gm-title').value = game.title;
-            document.getElementById('gm-platform').value = game.platform;
-            document.getElementById('gm-genre').value = game.genre || '🎯 Action';
-            document.getElementById('gm-buy-price').value = game.buyPrice;
-            document.getElementById('gm-buy-date').value = game.buyDate;
-            document.getElementById('gm-condition').value = game.condition;
-            document.getElementById('gm-sell-price').value = game.sellPrice || '';
-            document.getElementById('gm-sell-date').value = game.sellDate || '';
-            document.getElementById('gm-notes').value = game.notes || '';
+            // Populate modal form
+            document.getElementById('edit-gm-title').value = game.title;
+            document.getElementById('edit-gm-platform').value = game.platform;
+            document.getElementById('edit-gm-genre').value = game.genre || '🎯 Action';
+            document.getElementById('edit-gm-buy-price').value = game.buyPrice;
+            document.getElementById('edit-gm-buy-date').value = game.buyDate;
+            document.getElementById('edit-gm-condition').value = game.condition;
+            document.getElementById('edit-gm-sell-price').value = game.sellPrice || '';
+            document.getElementById('edit-gm-sell-date').value = game.sellDate || '';
+            document.getElementById('edit-gm-notes').value = game.notes || '';
 
             // Store editing ID
             window.editingGameId = firestoreId;
             
-            // Change button text
-            document.querySelector('#game-form .btn').textContent = 'Update Game';
+            // Show modal
+            const modal = document.getElementById('gameEditModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        };
 
-            // Scroll to form
-            document.getElementById('games').scrollIntoView({ behavior: 'smooth' });
+        window.closeGameEditModal = function() {
+            const modal = document.getElementById('gameEditModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 200);
+            window.editingGameId = null;
+        };
+
+        window.updateGameFromModal = async function(e) {
+            e.preventDefault();
+            
+            const sellPrice = document.getElementById('edit-gm-sell-price').value;
+            const sellDate = document.getElementById('edit-gm-sell-date').value;
+
+            const game = {
+                title: sanitizeText(document.getElementById('edit-gm-title').value),
+                platform: sanitizeText(document.getElementById('edit-gm-platform').value),
+                genre: sanitizeText(document.getElementById('edit-gm-genre').value),
+                condition: document.getElementById('edit-gm-condition').value,
+                buyPrice: sanitizeNumber(parseFloat(document.getElementById('edit-gm-buy-price').value)),
+                buyDate: document.getElementById('edit-gm-buy-date').value,
+                sellPrice: sellPrice ? sanitizeNumber(parseFloat(sellPrice)) : null,
+                sellDate: sellDate || null,
+                notes: sanitizeHTML(document.getElementById('edit-gm-notes').value),
+                status: (sellPrice && sellDate) ? 'sold' : 'owned',
+                timestamp: Date.now()
+            };
+
+            try {
+                const gameToSave = await encryptData(game);
+                await updateDoc(
+                    doc(db, 'users', currentUserUID, 'games', window.editingGameId),
+                    gameToSave
+                );
+                await loadData();
+                closeGameEditModal();
+            } catch (error) {
+                console.error('Error updating game:', error);
+                alert('Error updating game. Please try again.');
+            }
         };
 
         // Modal functions
@@ -4057,17 +4192,55 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
             const digital = digitalPurchases.find(d => d.firestoreId === firestoreId);
             if (!digital) return;
 
-            document.getElementById('d-name').value = digital.name;
-            document.getElementById('d-type').value = digital.type;
-            document.getElementById('d-amount').value = digital.amount;
-            document.getElementById('d-date').value = digital.date;
-            document.getElementById('d-duration').value = digital.duration || '';
-            document.getElementById('d-expiry').value = digital.expiryDate || '';
-            document.getElementById('d-notes').value = digital.notes || '';
+            // Populate modal form
+            document.getElementById('edit-d-name').value = digital.name;
+            document.getElementById('edit-d-type').value = digital.type;
+            document.getElementById('edit-d-price').value = digital.amount;
+            document.getElementById('edit-d-date').value = digital.date;
+            document.getElementById('edit-d-renewal').value = digital.expiryDate || '';
+            document.getElementById('edit-d-notes').value = digital.notes || '';
 
+            // Store editing ID
             window.editingDigitalId = firestoreId;
-            document.querySelector('#digital-form .btn').textContent = 'Update Purchase';
-            document.getElementById('digital').scrollIntoView({ behavior: 'smooth' });
+            
+            // Show modal
+            const modal = document.getElementById('digitalEditModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        };
+
+        window.closeDigitalEditModal = function() {
+            const modal = document.getElementById('digitalEditModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 200);
+            window.editingDigitalId = null;
+        };
+
+        window.updateDigitalFromModal = async function(e) {
+            e.preventDefault();
+
+            const digital = {
+                name: sanitizeText(document.getElementById('edit-d-name').value),
+                type: sanitizeText(document.getElementById('edit-d-type').value),
+                amount: sanitizeNumber(parseFloat(document.getElementById('edit-d-price').value)),
+                date: document.getElementById('edit-d-date').value,
+                expiryDate: document.getElementById('edit-d-renewal').value || null,
+                notes: sanitizeHTML(document.getElementById('edit-d-notes').value),
+                timestamp: Date.now()
+            };
+
+            try {
+                const digitalToSave = await encryptData(digital);
+                await updateDoc(
+                    doc(db, 'users', currentUserUID, 'digitalPurchases', window.editingDigitalId),
+                    digitalToSave
+                );
+                await loadData();
+                closeDigitalEditModal();
+            } catch (error) {
+                console.error('Error updating digital purchase:', error);
+                alert('Error updating digital purchase. Please try again.');
+            }
         };
 
         // TSV/CSV Export for Gadgets
@@ -4990,6 +5163,206 @@ window.importDigitalCSV = async function (event) {
     
     // Data will be loaded automatically after authentication via onAuthStateChanged
 </script>
+
+<!-- ============================================ -->
+<!-- EDIT & DELETE MODALS                        -->
+<!-- ============================================ -->
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 500px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 20px; padding: 40px; border: 1px solid rgba(239, 68, 68, 0.3);">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);">
+                <svg width="40" height="40" fill="none" stroke="white" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h2 style="font-size: 24px; margin-bottom: 12px; color: #ef4444; font-weight: 700;">Confirm Delete</h2>
+            <p id="deleteMessage" style="color: #94a3b8; font-size: 15px; line-height: 1.6;"></p>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+            <button onclick="closeDeleteModal()" 
+                    style="flex: 1; padding: 14px; background: rgba(148, 163, 184, 0.1); color: #f1f5f9; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;">
+                Cancel
+            </button>
+            <button onclick="confirmDelete()" 
+                    style="flex: 1; padding: 14px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Game Edit Modal -->
+<div id="gameEditModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 20px; padding: 30px; border: 1px solid rgba(16, 185, 129, 0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2 style="font-size: 24px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">🎮 Edit Game</h2>
+            <button onclick="closeGameEditModal()" style="background: rgba(148, 163, 184, 0.1); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+        </div>
+        
+        <form id="game-edit-form" onsubmit="updateGameFromModal(event)">
+            <div style="display: grid; gap: 16px;">
+                <div class="input-group">
+                    <label>Title</label>
+                    <input type="text" id="edit-gm-title" placeholder="e.g. God of War" required>
+                </div>
+                <div class="input-group">
+                    <label>Platform</label>
+                    <select id="edit-gm-platform" required></select>
+                </div>
+                <div class="input-group">
+                    <label>Genre</label>
+                    <select id="edit-gm-genre" required></select>
+                </div>
+                <div class="input-group">
+                    <label>Condition</label>
+                    <select id="edit-gm-condition" required>
+                        <option value="New">New</option>
+                        <option value="Like New">Like New</option>
+                        <option value="Good">Good</option>
+                        <option value="Fair">Fair</option>
+                        <option value="Poor">Poor</option>
+                        <option value="Digital">Digital</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Buy Price (₹)</label>
+                    <input type="number" id="edit-gm-buy-price" placeholder="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Purchase Date</label>
+                    <input type="date" id="edit-gm-buy-date" required>
+                </div>
+                <div class="input-group">
+                    <label>Sell Price (₹) <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label>
+                    <input type="number" id="edit-gm-sell-price" placeholder="Leave blank if owned">
+                </div>
+                <div class="input-group">
+                    <label>Sell Date <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label>
+                    <input type="date" id="edit-gm-sell-date">
+                </div>
+                <div class="input-group">
+                    <label>Notes</label>
+                    <textarea id="edit-gm-notes" rows="2" placeholder="Any notes..."></textarea>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="button" onclick="closeGameEditModal()" 
+                        style="flex: 1; padding: 14px; background: rgba(148, 163, 184, 0.1); color: #f1f5f9; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        style="flex: 2; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);">
+                    💾 Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Gadget Edit Modal -->
+<div id="gadgetEditModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 20px; padding: 30px; border: 1px solid rgba(16, 185, 129, 0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2 style="font-size: 24px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">📱 Edit Gadget</h2>
+            <button onclick="closeGadgetEditModal()" style="background: rgba(148, 163, 184, 0.1); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+        </div>
+        
+        <form id="gadget-edit-form" onsubmit="updateGadgetFromModal(event)">
+            <div style="display: grid; gap: 16px;">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="edit-g-name" placeholder="e.g. iPhone 15 Pro" required>
+                </div>
+                <div class="input-group">
+                    <label>Category</label>
+                    <select id="edit-g-category" required></select>
+                </div>
+                <div class="input-group">
+                    <label>Buy Price (₹)</label>
+                    <input type="number" id="edit-g-price" placeholder="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Purchase Date</label>
+                    <input type="date" id="edit-g-date" required>
+                </div>
+                <div class="input-group">
+                    <label>Sell Price (₹) <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label>
+                    <input type="number" id="edit-g-sell-price" placeholder="Leave blank if owned">
+                </div>
+                <div class="input-group">
+                    <label>Sell Date <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label>
+                    <input type="date" id="edit-g-sell-date">
+                </div>
+                <div class="input-group">
+                    <label>Notes</label>
+                    <textarea id="edit-g-notes" rows="2" placeholder="Any notes..."></textarea>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="button" onclick="closeGadgetEditModal()" 
+                        style="flex: 1; padding: 14px; background: rgba(148, 163, 184, 0.1); color: #f1f5f9; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        style="flex: 2; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);">
+                    💾 Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Digital Edit Modal -->
+<div id="digitalEditModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px; max-height: 90vh; overflow-y: auto; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 20px; padding: 30px; border: 1px solid rgba(16, 185, 129, 0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+            <h2 style="font-size: 24px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">💳 Edit Digital Purchase</h2>
+            <button onclick="closeDigitalEditModal()" style="background: rgba(148, 163, 184, 0.1); border: none; color: #94a3b8; width: 36px; height: 36px; border-radius: 8px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center;">×</button>
+        </div>
+        
+        <form id="digital-edit-form" onsubmit="updateDigitalFromModal(event)">
+            <div style="display: grid; gap: 16px;">
+                <div class="input-group">
+                    <label>Service/Product Name</label>
+                    <input type="text" id="edit-d-name" placeholder="e.g. Netflix" required>
+                </div>
+                <div class="input-group">
+                    <label>Type</label>
+                    <select id="edit-d-type" required></select>
+                </div>
+                <div class="input-group">
+                    <label>Price (₹)</label>
+                    <input type="number" id="edit-d-price" placeholder="0" required>
+                </div>
+                <div class="input-group">
+                    <label>Purchase Date</label>
+                    <input type="date" id="edit-d-date" required>
+                </div>
+                <div class="input-group">
+                    <label>Renewal/Expiry Date <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label>
+                    <input type="date" id="edit-d-renewal">
+                </div>
+                <div class="input-group">
+                    <label>Notes</label>
+                    <textarea id="edit-d-notes" rows="2" placeholder="Any notes..."></textarea>
+                </div>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="button" onclick="closeDigitalEditModal()" 
+                        style="flex: 1; padding: 14px; background: rgba(148, 163, 184, 0.1); color: #f1f5f9; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;">
+                    Cancel
+                </button>
+                <button type="submit" 
+                        style="flex: 2; padding: 14px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);">
+                    💾 Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- ============================================ -->
 <!-- ENCRYPTION MODALS & UI                      -->
