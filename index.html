@@ -2464,33 +2464,65 @@ function sanitizeURL(url) {
     if (!url) return '';
     const trimmed = url.trim();
     
+    console.log('🔍 sanitizeURL checking:', trimmed.substring(0, 100) + '...');
+    
     // Allow data: URLs for base64 encoded images
     if (trimmed.startsWith('data:image/')) {
         // Basic validation: check if it's a valid data URL format
         if (trimmed.match(/^data:image\/(png|jpeg|jpg|gif|webp);base64,/i)) {
+            console.log('  ✅ Valid data: URL (base64 image)');
             return trimmed;
         }
+        console.log('  ❌ Invalid data: URL format');
         return '';
     }
     
     // For HTTP/HTTPS URLs, check against allowed domains
     if (!trimmed.match(/^https?:\/\//i)) {
+        console.log('  ❌ Not an HTTP/HTTPS URL');
         return '';
     }
     try {
         const parsed = new URL(trimmed);
+        console.log('  Checking hostname:', parsed.hostname);
         const allowedDomains = [
+            // Image hosting services
             'imgur.com', 'i.imgur.com',
             'cloudinary.com',
+            'images.unsplash.com',
+            'cdn.pixabay.com',
+            'pexels.com',
+            
+            // Gaming sites
+            'ignimgs.com', 'assets-prd.ignimgs.com',
+            'steamcdn-a.akamaihd.net',
+            'image.api.playstation.com',
+            
+            // General CDNs
             'firebasestorage.googleapis.com',
             'cdn.jsdelivr.net',
-            'images.unsplash.com'
+            'cloudfront.net',
+            
+            // E-commerce
+            'amazon.com', 'images-na.ssl-images-amazon.com',
+            'm.media-amazon.com',
+            
+            // Social media
+            'fbcdn.net',
+            'cdninstagram.com'
         ];
         const isAllowed = allowedDomains.some(domain => 
             parsed.hostname === domain || parsed.hostname.endsWith('.' + domain)
         );
-        return isAllowed ? parsed.href : '';
-    } catch {
+        if (isAllowed) {
+            console.log('  ✅ Domain is allowed');
+            return parsed.href;
+        } else {
+            console.log('  ❌ Domain not in allowed list:', parsed.hostname);
+            return '';
+        }
+    } catch (e) {
+        console.log('  ❌ Invalid URL format:', e.message);
         return '';
     }
 }
