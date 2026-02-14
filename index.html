@@ -2324,17 +2324,23 @@
 
         // Helper functions for encryption
         window.encryptData = async function(data) {
+            console.log('🔐 encryptData called with:', data);
+            console.log('  imageUrl present:', !!data.imageUrl, 'value:', data.imageUrl);
+            
             if (!encryptionManager.isUnlocked) {
+                console.log('  Encryption not enabled, returning data as-is');
                 return data;
             }
             
             try {
                 const encrypted = await encryptionManager.encrypt(data);
-                return {
+                const result = {
                     encrypted: true,
                     data: encrypted,
                     timestamp: Date.now()
                 };
+                console.log('  ✅ Data encrypted successfully');
+                return result;
             } catch (error) {
                 console.error('Encryption error:', error);
                 return data;
@@ -2342,13 +2348,18 @@
         };
 
         window.decryptData = async function(encryptedDoc) {
+            console.log('🔓 decryptData called');
+            
             // If data is null or undefined, return as-is
             if (!encryptedDoc) {
+                console.log('  Data is null/undefined, returning as-is');
                 return encryptedDoc;
             }
             
             // If data is not marked as encrypted, return as-is
             if (!encryptedDoc.encrypted) {
+                console.log('  Data not encrypted, returning as-is');
+                console.log('  imageUrl present:', !!encryptedDoc.imageUrl, 'value:', encryptedDoc.imageUrl);
                 return encryptedDoc;
             }
             
@@ -2362,6 +2373,8 @@
             // Try to decrypt
             try {
                 const decrypted = await encryptionManager.decrypt(encryptedDoc.data);
+                console.log('  ✅ Decrypted data:', decrypted);
+                console.log('  imageUrl present:', !!decrypted.imageUrl, 'value:', decrypted.imageUrl);
                 return decrypted;
             } catch (error) {
                 console.error('Decryption error for document:', error);
@@ -2748,7 +2761,11 @@ async function loadData() {
         gadgets = await Promise.all(gadgetsSnapshot.docs.map(async doc => {
             try {
                 const encryptedData = doc.data();
+                console.log('📦 Loading gadget from Firestore:', doc.id);
+                console.log('  Encrypted data:', encryptedData);
                 const data = await decryptData(encryptedData);
+                console.log('  Decrypted data:', data);
+                console.log('  imageUrl in decrypted data:', data.imageUrl);
                 // Set status for old gadgets that don't have it
                 if (!data.status) {
                     data.status = (data.sellPrice && data.sellDate) ? 'sold' : 'owned';
@@ -4156,20 +4173,26 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
     try {
         if (window.editingGadgetId) {
             // UPDATE existing gadget
+            console.log('  Before encryption:', gadget);
             const gadgetToSave = await encryptData(gadget);
+            console.log('  After encryption:', gadgetToSave);
             await updateDoc(
                 doc(db, 'users', currentUserUID, 'gadgets', window.editingGadgetId),
                 gadgetToSave
             );
+            console.log('  ✅ Gadget updated in Firestore');
             window.editingGadgetId = null;
             document.querySelector('#gadget-form .btn').textContent = 'Add to Collection';
         } else {
             // ADD new gadget
+            console.log('  Before encryption:', gadget);
             const gadgetToSave = await encryptData(gadget);
+            console.log('  After encryption:', gadgetToSave);
             await addDoc(
                 collection(db, 'users', currentUserUID, 'gadgets'),
                 gadgetToSave
             );
+            console.log('  ✅ Gadget added to Firestore');
         }
 
         await loadData();
