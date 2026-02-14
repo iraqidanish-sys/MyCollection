@@ -704,8 +704,8 @@
 
         /* Product Image */
         .product-image {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 12px;
             object-fit: cover;
             flex-shrink: 0;
@@ -714,8 +714,8 @@
         }
 
         .product-image-placeholder {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 12px;
             flex-shrink: 0;
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%);
@@ -723,7 +723,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 56px;
+            font-size: 48px;
         }
 
         /* Card Info Section */
@@ -748,8 +748,12 @@
             font-weight: 700;
             margin-bottom: 6px;
             color: var(--text-primary);
-            line-height: 1.3;
+            line-height: 1.2;
             word-break: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .item-meta {
@@ -1873,50 +1877,16 @@
                             <div class="input-group"><label>Sell Date <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label><input type="date" id="g-sell-date"></div>
                         </div>
                         
-                        <!-- Image Upload Section -->
+                        <!-- Clickable Image Icon -->
                         <div class="input-group" style="margin-top: 8px;">
-                            <label>Product Image</label>
-                            <div class="image-upload-container">
-                                <div class="image-tabs">
-                                    <button type="button" class="tab-btn active" onclick="switchImageTab(event, 'g-upload')">📷 Upload</button>
-                                    <button type="button" class="tab-btn" onclick="switchImageTab(event, 'g-url')">🔗 URL</button>
-                                    <button type="button" class="tab-btn" onclick="switchImageTab(event, 'g-search')">🔍 Search</button>
-                                </div>
-                                
-                                <!-- Tab 1: Upload -->
-                                <div id="g-upload" class="tab-content active">
-                                    <div class="upload-area" id="g-upload-area">
-                                        <input type="file" id="g-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'gadget')">
-                                        <div class="upload-placeholder" onclick="document.getElementById('g-file-input').click()">
-                                            <div style="font-size: 32px; margin-bottom: 6px;">📷</div>
-                                            <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Click to upload</div>
-                                            <div style="font-size: 11px; color: var(--text-muted);">or drag and drop</div>
-                                        </div>
-                                        <div id="g-upload-preview" class="upload-preview" style="display: none;">
-                                            <img id="g-preview-img" src="" alt="Preview">
-                                            <button type="button" class="remove-image" onclick="removeImage('gadget')">✕</button>
-                                        </div>
+                            <label>Product Image <span style="color:var(--text-muted);font-size:11px;">(click to add)</span></label>
+                            <div onclick="openImagePicker('gadget')" style="cursor: pointer;">
+                                <div id="g-image-preview-container">
+                                    <div class="product-image-placeholder" style="margin: 0;">
+                                        <div style="font-size: 32px;">📷</div>
+                                        <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to add image</div>
                                     </div>
                                 </div>
-                                
-                                <!-- Tab 2: URL -->
-                                <div id="g-url" class="tab-content">
-                                    <input type="text" id="g-image-url" placeholder="Paste image URL here..." onchange="handleUrlImage(this.value, 'gadget')">
-                                    <div id="g-url-preview" class="upload-preview" style="display: none; margin-top: 8px;">
-                                        <img id="g-url-img" src="" alt="Preview">
-                                        <button type="button" class="remove-image" onclick="removeUrlImage('gadget')">✕</button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Tab 3: Search (Unsplash) -->
-                                <div id="g-search" class="tab-content">
-                                    <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-                                        <input type="text" id="g-search-query" placeholder="Search for product images..." style="flex: 1;">
-                                        <button type="button" class="btn-search" onclick="searchImages('gadget')">🔍 Search</button>
-                                    </div>
-                                    <div id="g-search-results" class="search-results"></div>
-                                </div>
-                                
                                 <input type="hidden" id="g-final-image-url" value="">
                             </div>
                         </div>
@@ -4171,18 +4141,16 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
         e.target.reset();
         document.getElementById('g-date').valueAsDate = new Date();
         
-        // Reset image upload section
+        // Reset image preview
         document.getElementById('g-final-image-url').value = '';
-        const uploadPreview = document.getElementById('g-upload-preview');
-        const uploadPlaceholder = document.getElementById('g-upload-area').querySelector('.upload-placeholder');
-        if (uploadPreview && uploadPlaceholder) {
-            uploadPreview.style.display = 'none';
-            uploadPlaceholder.style.display = 'block';
+        const container = document.getElementById('g-image-preview-container');
+        if (container) {
+            container.innerHTML = `
+                <div class="product-image-placeholder" style="margin: 0;">
+                    <div style="font-size: 32px;">📷</div>
+                    <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to add image</div>
+                </div>`;
         }
-        const urlPreview = document.getElementById('g-url-preview');
-        if (urlPreview) urlPreview.style.display = 'none';
-        const searchResults = document.getElementById('g-search-results');
-        if (searchResults) searchResults.innerHTML = '';
         
     } catch (error) {
         console.error('Error adding gadget:', error);
@@ -4246,31 +4214,32 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
         <div class="item-card" id="${cardId}" onclick="toggleCard('${cardId}')">
             <!-- Main Card Content (Always Visible) -->
             <div class="card-main">
-                <!-- Product Image -->
-                ${productImage ? 
-                    `<img src="${sanitizeURL(productImage)}" alt="${sanitizeText(g.name)}" class="product-image">` :
-                    `<div class="product-image-placeholder">${getCategoryEmoji(g.category)}</div>`
-                }
-                
-                <!-- Card Info -->
-                <div class="card-info">
-                    <div class="card-top-row">
-                        <div style="flex: 1;">
-                            <div class="item-title">${sanitizeText(g.name)}</div>
-                            <div class="item-meta">
+                <div style="width: 100%;">
+                    <!-- Title Above Everything -->
+                    <div class="item-title" style="margin-bottom: 12px;">${sanitizeText(g.name)}</div>
+                    
+                    <!-- Content Row: Image + Info -->
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                        <!-- Product Image -->
+                        ${productImage ? 
+                            `<img src="${sanitizeURL(productImage)}" alt="${sanitizeText(g.name)}" class="product-image">` :
+                            `<div class="product-image-placeholder">${getCategoryEmoji(g.category)}</div>`
+                        }
+                        
+                        <!-- Info beside image -->
+                        <div style="flex: 1; min-width: 0;">
+                            <div class="item-meta" style="margin-bottom: 8px;">
                                 <span class="item-category">${sanitizeText(g.category)}</span>
                             </div>
+                            
+                            <!-- Badges Row -->
+                            <div class="badge-row">
+                                <span class="status-badge status-${g.status || 'owned'}">
+                                    ${g.status === 'sold' ? '💰' : '✅'} ${(g.status || 'owned').toUpperCase()}
+                                </span>
+                                ${g.condition ? `<span class="rating-badge">${g.condition}</span>` : ''}
+                            </div>
                         </div>
-                        <div class="expand-arrow">▼</div>
-                    </div>
-                    
-                    <!-- Badges Row -->
-                    <div class="badge-row">
-                        <span class="status-badge status-${g.status || 'owned'}">
-                            ${g.status === 'sold' ? '💰' : '✅'} ${(g.status || 'owned').toUpperCase()}
-                        </span>
-                        <span class="price-badge">${sanitizeNumber(g.price).toLocaleString()}</span>
-                        ${g.condition ? `<span class="rating-badge">${g.condition}</span>` : ''}
                     </div>
                 </div>
             </div>
@@ -4352,7 +4321,22 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
             document.getElementById('edit-g-date').value = gadget.date;
             document.getElementById('edit-g-sell-price').value = gadget.sellPrice || '';
             document.getElementById('edit-g-sell-date').value = gadget.sellDate || '';
+            document.getElementById('edit-g-condition').value = gadget.condition || '';
             document.getElementById('edit-g-notes').value = gadget.notes || '';
+            
+            // Populate image if exists
+            const imageUrl = gadget.imageUrl || '';
+            document.getElementById('edit-g-final-image-url').value = imageUrl;
+            const container = document.getElementById('edit-g-image-preview-container');
+            if (imageUrl) {
+                container.innerHTML = `<img src="${imageUrl}" class="product-image" style="margin: 0;">`;
+            } else {
+                container.innerHTML = `
+                    <div class="product-image-placeholder" style="margin: 0;">
+                        <div style="font-size: 32px;">📷</div>
+                        <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to add</div>
+                    </div>`;
+            }
 
             // Store editing ID
             window.editingGadgetId = firestoreId;
@@ -4375,6 +4359,8 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
             
             const sellPrice = document.getElementById('edit-g-sell-price').value;
             const sellDate = document.getElementById('edit-g-sell-date').value;
+            const imageUrl = document.getElementById('edit-g-final-image-url').value;
+            const condition = document.getElementById('edit-g-condition').value;
 
             const gadget = {
                 name: sanitizeText(document.getElementById('edit-g-name').value),
@@ -4385,6 +4371,8 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
                 sellDate: sellDate || null,
                 notes: sanitizeHTML(document.getElementById('edit-g-notes').value),
                 status: (sellPrice && sellDate) ? 'sold' : 'owned',
+                imageUrl: imageUrl ? sanitizeURL(imageUrl) : null,
+                condition: condition ? sanitizeNumber(parseInt(condition)) : null,
                 timestamp: Date.now()
             };
 
@@ -4493,28 +4481,26 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
                     <div class="item-card" id="${cardId}" onclick="toggleCard('${cardId}')">
                         <!-- Main Card Content (Always Visible) -->
                         <div class="card-main">
-                            <!-- Game Icon (Platform) -->
-                            <div class="product-image-placeholder">🎮</div>
-                            
-                            <!-- Card Info -->
-                            <div class="card-info">
-                                <div class="card-top-row">
-                                    <div style="flex: 1;">
-                                        <div class="item-title">${sanitizeText(g.title)}</div>
-                                        <div class="item-meta">
+                            <div style="width: 100%;">
+                                <!-- Title Above Everything -->
+                                <div class="item-title" style="margin-bottom: 12px;">${sanitizeText(g.title)}</div>
+                                
+                                <!-- Content Row: Info Only (no placeholder) -->
+                                <div style="display: flex; gap: 16px; align-items: flex-start;">
+                                    <!-- Info -->
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div class="item-meta" style="margin-bottom: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
                                             <span class="item-category">${platformDisplay}</span>
                                             ${g.genre ? `<span class="item-category">${genreDisplay}</span>` : ''}
                                         </div>
+                                        
+                                        <!-- Badges Row -->
+                                        <div class="badge-row">
+                                            <span class="status-badge status-${g.status}">
+                                                ${g.status === 'sold' ? '💰' : '✅'} ${g.status.toUpperCase()}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div class="expand-arrow">▼</div>
-                                </div>
-                                
-                                <!-- Badges Row -->
-                                <div class="badge-row">
-                                    <span class="status-badge status-${g.status}">
-                                        ${g.status === 'sold' ? '💰' : '✅'} ${g.status.toUpperCase()}
-                                    </span>
-                                    <span class="price-badge">₹${g.buyPrice.toFixed(0)}</span>
                                 </div>
                             </div>
                         </div>
@@ -4917,27 +4903,25 @@ document.getElementById('gm-buy-date').valueAsDate = new Date();
                 <div class="item-card" id="${cardId}" onclick="toggleCard('${cardId}')">
                     <!-- Main Card Content (Always Visible) -->
                     <div class="card-main">
-                        <!-- Digital Icon -->
-                        <div class="product-image-placeholder">💳</div>
-                        
-                        <!-- Card Info -->
-                        <div class="card-info">
-                            <div class="card-top-row">
-                                <div style="flex: 1;">
-                                    <div class="item-title">${sanitizeText(d.name)}</div>
-                                    <div class="item-meta">
+                        <div style="width: 100%;">
+                            <!-- Title Above Everything -->
+                            <div class="item-title" style="margin-bottom: 12px;">${sanitizeText(d.name)}</div>
+                            
+                            <!-- Content Row: Info Only -->
+                            <div style="display: flex; gap: 16px; align-items: flex-start;">
+                                <!-- Info -->
+                                <div style="flex: 1; min-width: 0;">
+                                    <div class="item-meta" style="margin-bottom: 8px;">
                                         <span class="item-category">${sanitizeText(d.type)}</span>
                                     </div>
+                                    
+                                    <!-- Badges Row -->
+                                    <div class="badge-row">
+                                        <span class="status-badge ${isExpired ? 'status-sold' : 'status-owned'}">
+                                            ${isExpired ? '⏰ EXPIRED' : '✅ ACTIVE'}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="expand-arrow">▼</div>
-                            </div>
-                            
-                            <!-- Badges Row -->
-                            <div class="badge-row">
-                                <span class="status-badge ${isExpired ? 'status-sold' : 'status-owned'}">
-                                    ${isExpired ? '⏰ EXPIRED' : '✅ ACTIVE'}
-                                </span>
-                                <span class="price-badge">₹${d.amount.toFixed(0)}</span>
                             </div>
                         </div>
                     </div>
@@ -6176,6 +6160,27 @@ window.importDigitalCSV = async function (event) {
                     <label>Sell Date <span style="color:var(--text-muted);font-size:11px;">(optional)</span></label>
                     <input type="date" id="edit-g-sell-date">
                 </div>
+                
+                <!-- Clickable Image Icon -->
+                <div class="input-group">
+                    <label>Product Image <span style="color:var(--text-muted);font-size:11px;">(click to change)</span></label>
+                    <div onclick="openImagePicker('edit-gadget')" style="cursor: pointer;">
+                        <div id="edit-g-image-preview-container">
+                            <div class="product-image-placeholder" style="margin: 0;">
+                                <div style="font-size: 32px;">📷</div>
+                                <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to change</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="edit-g-final-image-url" value="">
+                    </div>
+                </div>
+                
+                <!-- Condition/Rating Field -->
+                <div class="input-group">
+                    <label>Condition/Rating <span style="color:var(--text-muted);font-size:11px;">(0-100, optional)</span></label>
+                    <input type="number" id="edit-g-condition" min="0" max="100" placeholder="e.g. 90">
+                </div>
+                
                 <div class="input-group">
                     <label>Notes</label>
                     <textarea id="edit-g-notes" rows="2" placeholder="Any notes..."></textarea>
@@ -6665,10 +6670,216 @@ window.importDigitalCSV = async function (event) {
         window.searchImages = searchImages;
         window.selectSearchImage = selectSearchImage;
 
+        // ==========================================
+        // IMAGE PICKER MODAL FUNCTIONS
+        // ==========================================
+        
+        let currentPickerTarget = null; // Stores which form is using the picker
+        let currentPickerImageUrl = null; // Stores the selected image URL
+        
+        window.openImagePicker = function(target) {
+            currentPickerTarget = target;
+            currentPickerImageUrl = null;
+            
+            // Reset all tabs
+            document.getElementById('picker-image-url').value = '';
+            document.getElementById('picker-search-query').value = '';
+            document.getElementById('picker-url-preview').style.display = 'none';
+            document.getElementById('picker-upload-preview').style.display = 'none';
+            document.getElementById('picker-search-results').innerHTML = '';
+            
+            // Show modal
+            const modal = document.getElementById('imagePickerModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        };
+        
+        window.closeImagePicker = function() {
+            const modal = document.getElementById('imagePickerModal');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                currentPickerTarget = null;
+                currentPickerImageUrl = null;
+            }, 200);
+        };
+        
+        // Handle URL input
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlInput = document.getElementById('picker-image-url');
+            if (urlInput) {
+                urlInput.addEventListener('input', function() {
+                    const url = this.value.trim();
+                    const preview = document.getElementById('picker-url-preview');
+                    const img = document.getElementById('picker-url-img');
+                    
+                    if (url) {
+                        img.src = url;
+                        preview.style.display = 'block';
+                        currentPickerImageUrl = url;
+                    } else {
+                        preview.style.display = 'none';
+                        currentPickerImageUrl = null;
+                    }
+                });
+            }
+        });
+        
+        // Search images in picker
+        window.pickerSearchImages = async function() {
+            const query = document.getElementById('picker-search-query').value.trim();
+            const resultsContainer = document.getElementById('picker-search-results');
+            
+            if (!query) {
+                alert('Please enter a search term');
+                return;
+            }
+            
+            resultsContainer.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Searching...</div>';
+            
+            try {
+                const response = await fetch(
+                    `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=12&client_id=BnwK7kJJ_mfLG63y-SZWSPO0YyR9I5XdcVMhZGnFfbw`
+                );
+                
+                if (!response.ok) throw new Error('Search failed');
+                
+                const data = await response.json();
+                
+                if (data.results.length === 0) {
+                    resultsContainer.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">No results found</div>';
+                    return;
+                }
+                
+                resultsContainer.innerHTML = data.results.map(photo => `
+                    <div class="search-result-item" onclick="pickerSelectImage('${photo.urls.regular}', this)">
+                        <img src="${photo.urls.thumb}" alt="${photo.alt_description || 'Photo'}">
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsContainer.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Search unavailable. Try URL tab.</div>';
+            }
+        };
+        
+        // Select image from search results
+        window.pickerSelectImage = function(url, element) {
+            const container = element.parentElement;
+            container.querySelectorAll('.search-result-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            currentPickerImageUrl = url;
+        };
+        
+        // Handle file upload
+        window.pickerHandleUpload = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // For now, just show preview (Firebase Storage upload can be added later)
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('picker-upload-img').src = e.target.result;
+                document.getElementById('picker-upload-preview').style.display = 'block';
+                currentPickerImageUrl = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+        
+        // Save the picked image
+        window.savePickedImage = function() {
+            if (!currentPickerImageUrl) {
+                alert('Please select or enter an image first');
+                return;
+            }
+            
+            if (!currentPickerTarget) {
+                closeImagePicker();
+                return;
+            }
+            
+            // Determine which form to update
+            const prefix = currentPickerTarget === 'gadget' ? 'g' : 
+                          currentPickerTarget === 'edit-gadget' ? 'edit-g' : '';
+            
+            if (prefix) {
+                // Update hidden input
+                document.getElementById(`${prefix}-final-image-url`).value = currentPickerImageUrl;
+                
+                // Update preview container
+                const container = document.getElementById(`${prefix}-image-preview-container`);
+                if (container) {
+                    container.innerHTML = `<img src="${currentPickerImageUrl}" class="product-image" style="margin: 0;">`;
+                }
+            }
+            
+            closeImagePicker();
+        };
+
         window.showSection = showSection;
         window.toggleProfileMenu = toggleProfileMenu;
         window.updateProfileMenu = updateProfileMenu;
     </script>
+
+<!-- Image Picker Modal -->
+<div id="imagePickerModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 500px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 20px; padding: 24px; border: 1px solid rgba(16, 185, 129, 0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">📷 Add Product Image</h2>
+            <button onclick="closeImagePicker()" style="background: rgba(148, 163, 184, 0.1); border: none; color: #94a3b8; width: 32px; height: 32px; border-radius: 8px; font-size: 18px; cursor: pointer;">×</button>
+        </div>
+        
+        <!-- Image Tabs -->
+        <div class="image-tabs">
+            <button type="button" class="tab-btn active" onclick="switchImageTab(event, 'picker-url')">🔗 URL</button>
+            <button type="button" class="tab-btn" onclick="switchImageTab(event, 'picker-search')">🔍 Search</button>
+            <button type="button" class="tab-btn" onclick="switchImageTab(event, 'picker-upload')">📷 Upload</button>
+        </div>
+        
+        <!-- Tab 1: URL (Default) -->
+        <div id="picker-url" class="tab-content active">
+            <input type="text" id="picker-image-url" placeholder="Paste image URL here..." style="width: 100%; margin-bottom: 8px;">
+            <div id="picker-url-preview" class="upload-preview" style="display: none; margin: 0 auto;">
+                <img id="picker-url-img" src="" alt="Preview">
+            </div>
+        </div>
+        
+        <!-- Tab 2: Search (Unsplash) -->
+        <div id="picker-search" class="tab-content">
+            <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <input type="text" id="picker-search-query" placeholder="Search for product images..." style="flex: 1;">
+                <button type="button" class="btn-search" onclick="pickerSearchImages()">🔍</button>
+            </div>
+            <div id="picker-search-results" class="search-results"></div>
+        </div>
+        
+        <!-- Tab 3: Upload -->
+        <div id="picker-upload" class="tab-content">
+            <input type="file" id="picker-file-input" accept="image/*" style="display: none;" onchange="pickerHandleUpload(event)">
+            <div class="upload-placeholder" onclick="document.getElementById('picker-file-input').click()">
+                <div style="font-size: 32px; margin-bottom: 6px;">📷</div>
+                <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Click to upload</div>
+                <div style="font-size: 11px; color: var(--text-muted);">or drag and drop</div>
+            </div>
+            <div id="picker-upload-preview" class="upload-preview" style="display: none; margin: 8px auto 0;">
+                <img id="picker-upload-img" src="" alt="Preview">
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+            <button type="button" onclick="closeImagePicker()" 
+                    style="flex: 1; padding: 12px; background: rgba(148, 163, 184, 0.1); color: #f1f5f9; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                Cancel
+            </button>
+            <button type="button" onclick="savePickedImage()" 
+                    style="flex: 2; padding: 12px; background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                ✓ Save Image
+            </button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
