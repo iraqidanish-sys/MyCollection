@@ -1885,12 +1885,10 @@
                             <!-- Clickable Image Icon -->
                             <div class="input-group">
                                 <label>Product Image <span style="color:var(--text-muted);font-size:11px;">(click to add)</span></label>
-                                <div onclick="openImagePicker('gadget')" style="cursor: pointer; display: flex; justify-content: center;">
-                                    <div id="g-image-preview-container">
-                                        <div class="product-image-placeholder" style="margin: 0;">
-                                            <div style="font-size: 32px;">📷</div>
-                                            <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to add</div>
-                                        </div>
+                                <div onclick="openImagePicker('gadget')" style="cursor: pointer; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; min-height: 48px; transition: all 0.2s;" onmouseover="this.style.background='rgba(16, 185, 129, 0.1)'; this.style.borderColor='rgba(16, 185, 129, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+                                    <div id="g-image-preview-container" style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                                        <div style="font-size: 24px;">📷</div>
+                                        <div style="font-size: 13px; color: var(--text-muted);">Click to add image</div>
                                     </div>
                                     <input type="hidden" id="g-final-image-url" value="">
                                 </div>
@@ -1932,12 +1930,10 @@
                             <!-- Clickable Image Icon for Games -->
                             <div class="input-group">
                                 <label>Game Cover <span style="color:var(--text-muted);font-size:11px;">(click to add)</span></label>
-                                <div onclick="openImagePicker('game')" style="cursor: pointer; display: flex; justify-content: center;">
-                                    <div id="gm-image-preview-container">
-                                        <div class="product-image-placeholder" style="margin: 0;">
-                                            <div style="font-size: 32px;">🎮</div>
-                                            <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to add</div>
-                                        </div>
+                                <div onclick="openImagePicker('game')" style="cursor: pointer; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; min-height: 48px; transition: all 0.2s;" onmouseover="this.style.background='rgba(16, 185, 129, 0.1)'; this.style.borderColor='rgba(16, 185, 129, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+                                    <div id="gm-image-preview-container" style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                                        <div style="font-size: 24px;">🎮</div>
+                                        <div style="font-size: 13px; color: var(--text-muted);">Click to add cover</div>
                                     </div>
                                     <input type="hidden" id="gm-final-image-url" value="">
                                 </div>
@@ -4161,10 +4157,9 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
         const container = document.getElementById('g-image-preview-container');
         if (container) {
             container.innerHTML = `
-                <div class="product-image-placeholder" style="margin: 0;">
-                    <div style="font-size: 32px;">📷</div>
-                    <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to add image</div>
-                </div>`;
+                <div style="font-size: 24px;">📷</div>
+                <div style="font-size: 13px; color: var(--text-muted);">Click to add image</div>
+            `;
         }
         
     } catch (error) {
@@ -4222,8 +4217,11 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
         const cardId = `gadget-card-${index}`;
         
         // Determine product image
-        const productImage = g.imageUrl || g.icon;
+        const productImage = g.imageUrl;
         const categoryEmoji = getCategoryEmoji(g.category);
+        
+        // Debug: Check if image is being saved
+        if (index === 0) console.log('First gadget imageUrl:', g.imageUrl, 'Category:', g.category);
         
         return `
         <div class="item-card" id="${cardId}" onclick="toggleCard('${cardId}')">
@@ -4344,13 +4342,15 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
             document.getElementById('edit-g-final-image-url').value = imageUrl;
             const container = document.getElementById('edit-g-image-preview-container');
             if (imageUrl) {
-                container.innerHTML = `<img src="${imageUrl}" class="product-image" style="margin: 0;">`;
+                container.innerHTML = `
+                    <img src="${imageUrl}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;">
+                    <div style="font-size: 13px; color: var(--text-primary); flex: 1;">Image added ✓</div>
+                `;
             } else {
                 container.innerHTML = `
-                    <div class="product-image-placeholder" style="margin: 0;">
-                        <div style="font-size: 32px;">📷</div>
-                        <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to add</div>
-                    </div>`;
+                    <div style="font-size: 24px;">📷</div>
+                    <div style="font-size: 13px; color: var(--text-muted);">Click to add/change image</div>
+                `;
             }
 
             // Store editing ID
@@ -4460,10 +4460,9 @@ document.getElementById('gm-final-image-url').value = '';
 const gmContainer = document.getElementById('gm-image-preview-container');
 if (gmContainer) {
     gmContainer.innerHTML = `
-        <div class="product-image-placeholder" style="margin: 0;">
-            <div style="font-size: 32px;">🎮</div>
-            <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to add</div>
-        </div>`;
+        <div style="font-size: 24px;">🎮</div>
+        <div style="font-size: 13px; color: var(--text-muted);">Click to add cover</div>
+    `;
 }
             } catch (error) {
                 console.error('Error adding game:', error);
@@ -6198,12 +6197,10 @@ window.importDigitalCSV = async function (event) {
                 <!-- Clickable Image Icon -->
                 <div class="input-group">
                     <label>Product Image <span style="color:var(--text-muted);font-size:11px;">(click to change)</span></label>
-                    <div onclick="openImagePicker('edit-gadget')" style="cursor: pointer;">
-                        <div id="edit-g-image-preview-container">
-                            <div class="product-image-placeholder" style="margin: 0;">
-                                <div style="font-size: 32px;">📷</div>
-                                <div style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">Click to change</div>
-                            </div>
+                    <div onclick="openImagePicker('edit-gadget')" style="cursor: pointer; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; min-height: 48px; transition: all 0.2s;" onmouseover="this.style.background='rgba(16, 185, 129, 0.1)'; this.style.borderColor='rgba(16, 185, 129, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.borderColor='rgba(255, 255, 255, 0.1)'">
+                        <div id="edit-g-image-preview-container" style="flex: 1; display: flex; align-items: center; gap: 12px;">
+                            <div style="font-size: 24px;">📷</div>
+                            <div style="font-size: 13px; color: var(--text-muted);">Click to add/change image</div>
                         </div>
                         <input type="hidden" id="edit-g-final-image-url" value="">
                     </div>
@@ -6850,10 +6847,13 @@ window.importDigitalCSV = async function (event) {
                 // Update hidden input
                 document.getElementById(`${prefix}-final-image-url`).value = currentPickerImageUrl;
                 
-                // Update preview container
+                // Update preview container with horizontal layout
                 const container = document.getElementById(`${prefix}-image-preview-container`);
                 if (container) {
-                    container.innerHTML = `<img src="${currentPickerImageUrl}" class="product-image" style="margin: 0;">`;
+                    container.innerHTML = `
+                        <img src="${currentPickerImageUrl}" style="width: 40px; height: 40px; border-radius: 6px; object-fit: cover;">
+                        <div style="font-size: 13px; color: var(--text-primary); flex: 1;">Image added ✓</div>
+                    `;
                 }
             }
             
