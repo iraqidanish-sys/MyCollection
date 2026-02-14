@@ -4306,19 +4306,13 @@ document.getElementById('gadget-form').addEventListener('submit', async (e) => {
                     <button class="btn-edit" onclick="editGadget('${g.firestoreId}')" style="flex: 1;">
                         ✏️ Edit
                     </button>
-                    <button class="btn-delete" onclick="deleteGadget('${g.firestoreId}', '${sanitizeText(g.name).replace(/'/g, "\\'")')" style="flex: 1;">
+                    <button class="btn-delete" onclick="deleteGadget('${g.firestoreId}', '${sanitizeText(g.name).replace(/'/g, "\\'")}')" style="flex: 1;">
                         🗑️ Delete
                     </button>
                 </div>
             </div>
         </div>
         `;
-    }).join('');
-}
-            </div>
-            ` : ''}
-        </div>
-    `;
     }).join('');
 }
 
